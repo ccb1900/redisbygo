@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"redis/pkg/others"
+	"github.com/ccb1900/redisbygo/pkg/others"
 	"strconv"
 )
 

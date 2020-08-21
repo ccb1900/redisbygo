@@ -1,4 +1,4 @@
-module redis
+module github.com/ccb1900/redisbygo
 
 go 1.14
 

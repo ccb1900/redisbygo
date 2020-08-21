@@ -1,9 +1,9 @@
 package db
 
 import (
-	"redis/app/server/constructor"
-	"redis/pkg/client"
-	"redis/pkg/config"
+	"github.com/ccb1900/redisbygo/app/server/constructor"
+	"github.com/ccb1900/redisbygo/pkg/client"
+	"github.com/ccb1900/redisbygo/pkg/config"
 )
 
 func SelectDb(cl *client.Client, id int) {

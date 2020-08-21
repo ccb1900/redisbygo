@@ -1,6 +1,6 @@
 package command
 
-import "redis/pkg/client"
+import "github.com/ccb1900/redisbygo/pkg/client"
 
 type RedisCommand struct {
 	Name         string

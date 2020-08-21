@@ -2,12 +2,12 @@ package dashboard
 
 import (
 	"fmt"
+	"github.com/ccb1900/redisbygo/app/server/constructor"
+	"github.com/ccb1900/redisbygo/pkg/command"
+	"github.com/ccb1900/redisbygo/pkg/config"
+	"github.com/ccb1900/redisbygo/pkg/others"
 	"github.com/gin-gonic/gin"
 	"os"
-	"redis/app/server/constructor"
-	"redis/pkg/command"
-	"redis/pkg/config"
-	"redis/pkg/others"
 	"runtime"
 	"strconv"
 	"time"

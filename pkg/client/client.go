@@ -1,10 +1,10 @@
 package client
 
 import (
+	"github.com/ccb1900/redisbygo/pkg/ds/sds"
+	"github.com/ccb1900/redisbygo/pkg/log"
+	"github.com/ccb1900/redisbygo/pkg/redisdb"
 	"net"
-	"redis/pkg/ds/sds"
-	"redis/pkg/log"
-	"redis/pkg/redisdb"
 )
 
 type Client struct {

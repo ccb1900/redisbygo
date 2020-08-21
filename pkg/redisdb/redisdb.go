@@ -1,7 +1,7 @@
 package redisdb
 
 import (
-	"redis/pkg/ds/robj"
+	"github.com/ccb1900/redisbygo/pkg/ds/robj"
 )
 
 type RedisDb struct {

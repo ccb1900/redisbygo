@@ -1,11 +1,11 @@
 package constructor
 
 import (
+	"github.com/ccb1900/redisbygo/pkg/client"
+	"github.com/ccb1900/redisbygo/pkg/client/db"
+	"github.com/ccb1900/redisbygo/pkg/ds/sds/methods"
+	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
-	"redis/pkg/client"
-	"redis/pkg/client/db"
-	"redis/pkg/ds/sds/methods"
-	"redis/pkg/log"
 )
 
 func NewClient(conn net.Conn) *client.Client {

@@ -1,8 +1,8 @@
 package string
 
 import (
-	"redis/pkg/client"
-	"redis/pkg/redisdb/redisdb"
+	"github.com/ccb1900/redisbygo/pkg/client"
+	"github.com/ccb1900/redisbygo/pkg/redisdb/redisdb"
 )
 
 func test() {

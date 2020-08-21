@@ -1,12 +1,12 @@
 package constructor
 
 import (
+	"github.com/ccb1900/redisbygo/pkg/client"
+	"github.com/ccb1900/redisbygo/pkg/config"
+	"github.com/ccb1900/redisbygo/pkg/log"
+	"github.com/ccb1900/redisbygo/pkg/persist/aof"
+	"github.com/ccb1900/redisbygo/pkg/redisdb"
 	"net"
-	"redis/pkg/client"
-	"redis/pkg/config"
-	"redis/pkg/log"
-	"redis/pkg/persist/aof"
-	"redis/pkg/redisdb"
 	"sync"
 )
 

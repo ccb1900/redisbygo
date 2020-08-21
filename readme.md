@@ -1,13 +1,13 @@
 # redis golang 实现
-
-1. 协议解析
-2. 命令解析，调用对应命令，内存存储结构（支持集群，支持哨兵）
-3. 持久化（写入和重新载入）
-
-
 ## 使用
 ```
 make
+```
 
+```
+cp server.example.json server.json
+```
+
+```
 ./build/redis
 ```

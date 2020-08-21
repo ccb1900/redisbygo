@@ -1,9 +1,9 @@
 package command
 
 import (
-	"redis/pkg/command/command"
-	"redis/pkg/command/db"
-	string2 "redis/pkg/command/string"
+	"github.com/ccb1900/redisbygo/pkg/command/command"
+	"github.com/ccb1900/redisbygo/pkg/command/db"
+	string2 "github.com/ccb1900/redisbygo/pkg/command/string"
 )
 
 var RedisCommandTable = []command.RedisCommand{

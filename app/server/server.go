@@ -3,15 +3,15 @@ package server
 import (
 	"bufio"
 	"fmt"
+	constructor2 "github.com/ccb1900/redisbygo/app/server/constructor"
+	"github.com/ccb1900/redisbygo/pkg/client"
+	"github.com/ccb1900/redisbygo/pkg/client/constructor"
+	config2 "github.com/ccb1900/redisbygo/pkg/config"
+	"github.com/ccb1900/redisbygo/pkg/ds/robj"
+	"github.com/ccb1900/redisbygo/pkg/redisdb/redisdb"
+	"github.com/ccb1900/redisbygo/pkg/utils"
 	"io"
 	"net"
-	constructor2 "redis/app/server/constructor"
-	"redis/pkg/client"
-	"redis/pkg/client/constructor"
-	config2 "redis/pkg/config"
-	"redis/pkg/ds/robj"
-	"redis/pkg/redisdb/redisdb"
-	"redis/pkg/utils"
 	"strconv"
 )
 

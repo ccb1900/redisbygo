@@ -1,5 +1,5 @@
 
 build:
-	go build -o build/redis main/main.go && cp server.json build/server.json
+	go build -o build/redis main/main.go
 clean:
 	rm  -rf build

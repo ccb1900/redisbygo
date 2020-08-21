@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/ccb1900/redisbygo/app/dashboard"
+	"github.com/ccb1900/redisbygo/app/server"
+	"github.com/ccb1900/redisbygo/pkg/config"
+	"github.com/ccb1900/redisbygo/pkg/others"
 	"os"
-	"redis/app/dashboard"
-	"redis/app/server"
-	"redis/pkg/config"
-	"redis/pkg/others"
 	"sync"
 )
 

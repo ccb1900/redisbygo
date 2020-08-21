@@ -1,5 +1,5 @@
 package atomic
 
-func Incr(value, count) {
-
-}
+//func Incr(value, count) {
+//
+//}

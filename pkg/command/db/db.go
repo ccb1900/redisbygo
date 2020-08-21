@@ -1,8 +1,8 @@
 package db
 
 import (
-	"redis/app/server/constructor"
-	"redis/pkg/client"
+	"github.com/ccb1900/redisbygo/app/server/constructor"
+	"github.com/ccb1900/redisbygo/pkg/client"
 )
 
 func SelectDbCommand(c *client.Client) {
