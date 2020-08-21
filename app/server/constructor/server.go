@@ -19,6 +19,8 @@ type Server struct {
 	Commands         chan *client.Client
 	Listener         net.Listener
 	Aof              *aof.Aof
+	WaitCloseClients chan int
+	NewClients       chan net.Conn
 }
 
 var gs *Server
@@ -40,6 +42,8 @@ func NewServer() *Server {
 		}
 
 		gs.Db = dbList
+		gs.WaitCloseClients = make(chan int, 16)
+		gs.NewClients = make(chan net.Conn, 32)
 	})
 
 	return gs

@@ -40,10 +40,12 @@ func CreateServer() {
 // 处理命令
 func handleCommands(s *constructor2.Server) {
 	for {
-		fmt.Println("waiting commands....")
+		//go func() {
+		//	fmt.Println("waiting commands....")
+		//}()
 		select {
 		case command := <-s.Commands:
-			fmt.Println("handleCommands", command.Query)
+			//fmt.Println("handleCommands", command.Query)
 			// 解析命令
 			parseCommand(command)
 			// 写入aof
@@ -69,61 +71,83 @@ func response(conn net.Conn, message string) {
 
 // 接受客户端请求
 func acceptRequest(s *constructor2.Server) {
-	for {
-		s.Log.Info("waiting connecting...")
-		conn, err := s.Listener.Accept()
+	go func() {
+		for {
+			select {
+			case index := <-s.WaitCloseClients:
+				//fmt.Println("acceptRequest trigger delete1")
+				delete(s.Clients, index)
+				//fmt.Println("acceptRequest trigger delete2")
+			case conn := <-s.NewClients:
+				//fmt.Println("new client is coming...")
+				s.No = s.No + 1
+				newClient := constructor.NewClient(conn)
+				newClient.Index = s.No
+				newClient.Db = s.Db[0]
+				cc := config2.NewConfig()
 
+				if len(s.Clients) >= cc.Maxclients {
+					w := bufio.NewWriter(newClient.Conn)
+					_, _ = w.WriteString(utils.ProtocolLineErr("ERR max number of clients reached"))
+					s.StatRejectedConn++
+					_ = w.Flush()
+
+					fmt.Println("client up to max")
+				} else {
+					s.Clients[s.No] = newClient
+					//go func() {
+					//	fmt.Println("accept client::")
+					//}()
+
+					go handleConnection(s, newClient)
+				}
+			}
+		}
+	}()
+	for {
+		go func() {
+			//s.Log.Info("waiting connecting...")
+		}()
+		conn, err := s.Listener.Accept()
+		//s.Log.Info("waiting connecting2...")
 		if err != nil {
 			fmt.Println(err)
 			s.Log.Info(err.Error())
 		}
 
-		s.No = s.No + 1
-		newClient := constructor.NewClient(conn)
-		newClient.Index = s.No
-		newClient.Db = s.Db[0]
-		cc := config2.NewConfig()
-
-		if len(s.Clients) >= cc.Maxclients {
-			w := bufio.NewWriter(newClient.Conn)
-			_, _ = w.WriteString(utils.ProtocolLineErr("ERR max number of clients reached"))
-			s.StatRejectedConn++
-			_ = w.Flush()
-
-			fmt.Println("client up to max")
-		} else {
-			s.Clients[s.No] = newClient
-			fmt.Println("accept client::")
-
-			go handleConnection(s, newClient)
-		}
+		go func() {
+			s.NewClients <- conn
+		}()
 	}
 }
 
 // 处理客户端连接
 func handleConnection(s *constructor2.Server, cl *client.Client) {
-	s.Log.Info("new client")
-	s.Log.Info(cl.Conn.RemoteAddr().String())
+	//s.Log.Info("new client")
+	//s.Log.Info(cl.Conn.RemoteAddr().String())
 
 	c := 1024
 	buf := make([]byte, c)
 	for {
 		size, err := cl.Conn.Read(buf)
-		fmt.Println("size::", size, "err::", err)
+		//go func() {
+		//	fmt.Println("size::", size, "err::", err)
+		//}()
 		if size == 0 && err == io.EOF {
 			// 客户端关闭
 			err = cl.Conn.Close()
 			if err != nil {
-				fmt.Println("close client fail::", err)
+				//fmt.Println("close client fail::", err)
 			} else {
-				fmt.Println("close client success::")
+				//fmt.Println("close client success::")
 			}
 			// 删除客户端
-			delete(s.Clients, cl.Index)
+			s.WaitCloseClients <- cl.Index
+			//fmt.Println("handleConnection trigger delete::", cl.Index)
 			// 结束循环，回收协程
 			break
 		} else {
-			fmt.Println("handleConnection", string(buf))
+			//fmt.Println("handleConnection", string(buf))
 			// 发送客户端到单个协程，由单个协程处理
 			cl.Query = string(buf)
 			s.Commands <- cl

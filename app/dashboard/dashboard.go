@@ -56,6 +56,7 @@ func clients(c *gin.Context) {
 	c.JSON(200, results)
 }
 
+// 由于map不能并发访问，此方法会导致服务器挂掉
 func keys(c *gin.Context) {
 	type key struct {
 		Name string
@@ -67,7 +68,8 @@ func keys(c *gin.Context) {
 	s := constructor.NewServer()
 
 	for _, d := range s.Db {
-		for k := range d.Dict {
+		dd := d.Dict
+		for k := range dd {
 			results = append(results, key{
 				Name: strconv.Itoa(k.Encoding),
 				Type: strconv.Itoa(k.Encoding),
@@ -81,35 +83,45 @@ func keys(c *gin.Context) {
 
 func metrics(c *gin.Context) {
 	type ServerInfo struct {
-		Version      string
-		CRLF         string
-		GoVersion    string
-		CPUNum       int
-		GoRoutineNum int
-		Arch         string
-		Goos         string
-		GoRoot       string
-		Date         string
-		Hostname     string
-		Memory       string
-		Disk         string
-		Envs         []string
+		RedisVersion   string
+		CRLF           string
+		GoVersion      string
+		CPUNum         int
+		GoRoutineNum   int
+		Arch           string
+		Goos           string
+		GoRoot         string
+		Date           string
+		Hostname       string
+		Memory         string
+		Disk           string
+		RedisKeyNum    int
+		RedisClientNum int
+		Envs           []string
 	}
 
-	hostname, _ := os.Hostname()
+	s := constructor.NewServer()
 
+	hostname, _ := os.Hostname()
+	count := 0
+
+	for i := 0; i < len(s.Db); i++ {
+		count += len(s.Db[i].Dict)
+	}
 	c.JSON(200, ServerInfo{
-		Version:      others.RedisVersion,
-		CRLF:         others.CRLF,
-		GoVersion:    runtime.Version(),
-		CPUNum:       runtime.NumCPU(),
-		GoRoutineNum: runtime.NumGoroutine(),
-		Arch:         runtime.GOARCH,
-		Goos:         runtime.GOOS,
-		GoRoot:       runtime.GOROOT(),
-		Date:         time.Now().Format("2006-01-02 15:04:05"),
-		Hostname:     hostname,
-		Envs:         os.Environ(),
+		RedisVersion:   others.RedisVersion,
+		CRLF:           others.CRLF,
+		GoVersion:      runtime.Version(),
+		CPUNum:         runtime.NumCPU(),
+		GoRoutineNum:   runtime.NumGoroutine(),
+		Arch:           runtime.GOARCH,
+		Goos:           runtime.GOOS,
+		GoRoot:         runtime.GOROOT(),
+		Date:           time.Now().Format("2006-01-02 15:04:05"),
+		Hostname:       hostname,
+		Envs:           os.Environ(),
+		RedisClientNum: len(s.Clients),
+		RedisKeyNum:    count,
 	})
 }
 func CreateDashboard() {
