@@ -10,7 +10,7 @@ type Log struct {
 func NewLog() *Log {
 	customFormatter := new(log.TextFormatter)
 	customFormatter.FullTimestamp = true
-	customFormatter.TimestampFormat = "1970-01-01 15:04:05"
+	customFormatter.TimestampFormat = "2016-11-11 15:04:05"
 	log.SetFormatter(customFormatter)
 	return &Log{}
 }

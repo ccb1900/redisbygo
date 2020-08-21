@@ -31,10 +31,11 @@ func CreateServer() {
 
 	s.Listener = ln
 	if err != nil {
-		panic(err)
+		s.Log.Info("listen::" + err.Error())
+	} else {
+		go acceptRequest(s)
+		go handleCommands(s)
 	}
-	go acceptRequest(s)
-	go handleCommands(s)
 }
 
 // 处理命令
@@ -49,7 +50,7 @@ func handleCommands(s *constructor2.Server) {
 			// 解析命令
 			parseCommand(command)
 			// 写入aof
-			s.Aof.Write(command.Query)
+			//s.Aof.Write(command.Query)
 		}
 	}
 }
@@ -111,20 +112,20 @@ func acceptRequest(s *constructor2.Server) {
 		conn, err := s.Listener.Accept()
 		//s.Log.Info("waiting connecting2...")
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("client reach but fail::", err)
 			s.Log.Info(err.Error())
+		} else {
+			go func() {
+				s.NewClients <- conn
+			}()
 		}
-
-		go func() {
-			s.NewClients <- conn
-		}()
 	}
 }
 
 // 处理客户端连接
 func handleConnection(s *constructor2.Server, cl *client.Client) {
 	//s.Log.Info("new client")
-	//s.Log.Info(cl.Conn.RemoteAddr().String())
+	s.Log.Info(cl.Conn.RemoteAddr().String())
 
 	c := 1024
 	buf := make([]byte, c)

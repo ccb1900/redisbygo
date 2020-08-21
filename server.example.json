@@ -5,7 +5,7 @@
   "dashboard_ip": "127.0.0.1",
   "timezone": "PRC",
   "dbnum": 16,
-  "maxclients": 2048,
+  "maxclients": 100000,
   "name": "testredis",
   "appendonly": true,
   "save_seconds": 60,
