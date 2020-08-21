@@ -1,0 +1,6 @@
+redis
+dump.rdb
+appendonly.aof
+server.json
+build
+.idea

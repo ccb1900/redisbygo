@@ -1,0 +1,15 @@
+{
+  "port": 1245,
+  "host": "127.0.0.1",
+  "dashboard_port": 9001,
+  "dashboard_ip": "127.0.0.1",
+  "timezone": "PRC",
+  "dbnum": 16,
+  "maxclients": 2048,
+  "name": "testredis",
+  "appendonly": true,
+  "save_seconds": 60,
+  "save_times": 10000,
+  "dbfilename": "dump.rdb",
+  "dir": "./"
+}
