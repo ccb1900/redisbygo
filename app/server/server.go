@@ -46,8 +46,6 @@ func handleCommands(s *constructor2.Server) {
 			fmt.Println("handleCommands", command.Query)
 			// 解析命令
 			parseCommand(command)
-			// 回复
-			response(command.Conn, "success")
 			// 写入aof
 			s.Aof.Write(command.Query)
 		}
@@ -58,6 +56,8 @@ func handleCommands(s *constructor2.Server) {
 func parseCommand(c *client.Client) {
 	key := robj.NewRedisObject()
 	redisdb.Add(c.Db, key, key)
+	// 回复
+	go response(c.Conn, "OK")
 }
 
 // 回复客户端
