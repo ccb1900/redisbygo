@@ -4,3 +4,4 @@ appendonly.aof
 server.json
 build
 .idea
+dump.rdb

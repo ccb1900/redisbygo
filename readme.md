@@ -14,8 +14,12 @@ cp server.example.json server.json
 
 ## benchmark
 ```
-redis-benchmark -h 127.0.0.1 -p 6378 -n 100000 -c 20
+redis-benchmark -h 127.0.0.1 -p 6378 -n 100000 -c 1000
 ```
+
+## 参考
+
+https://redis.io/documentation
 
 ## 其他
 

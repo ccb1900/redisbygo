@@ -127,32 +127,37 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 	//s.Log.Info("new client")
 	s.Log.Info(cl.Conn.RemoteAddr().String())
 
-	c := 1024
-	buf := make([]byte, c)
 	for {
-		size, err := cl.Conn.Read(buf)
-		//go func() {
-		//	fmt.Println("size::", size, "err::", err)
-		//}()
-		if size == 0 && err == io.EOF {
-			// 客户端关闭
-			err = cl.Conn.Close()
-			if err != nil {
-				//fmt.Println("close client fail::", err)
-			} else {
-				//fmt.Println("close client success::")
-			}
-			// 删除客户端
-			s.WaitCloseClients <- cl.Index
-			//fmt.Println("handleConnection trigger delete::", cl.Index)
-			// 结束循环，回收协程
+		if readFromClient(cl, s) {
 			break
-		} else {
-			//fmt.Println("handleConnection", string(buf))
-			// 发送客户端到单个协程，由单个协程处理
-			cl.Query = string(buf)
-			s.Commands <- cl
-			buf = make([]byte, c)
 		}
+	}
+}
+
+func readFromClient(cl *client.Client, s *constructor2.Server) bool {
+	buf := make([]byte, 1024)
+	size, err := cl.Conn.Read(buf)
+	//go func() {
+	//	fmt.Println("size::", size, "err::", err)
+	//}()
+	if size == 0 && err == io.EOF {
+		// 客户端关闭
+		err = cl.Conn.Close()
+		if err != nil {
+			//fmt.Println("close client fail::", err)
+		} else {
+			//fmt.Println("close client success::")
+		}
+		// 删除客户端
+		s.WaitCloseClients <- cl.Index
+		//fmt.Println("handleConnection trigger delete::", cl.Index)
+		// 结束循环，回收协程
+		return true
+	} else {
+		//fmt.Println("handleConnection", string(buf))
+		// 发送客户端到单个协程，由单个协程处理
+		cl.Query = string(buf)
+		s.Commands <- cl
+		return false
 	}
 }
