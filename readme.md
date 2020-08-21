@@ -1,4 +1,4 @@
-# Redis Server Golang 实现
+# Redis Server Golang 实现（开发中...）
 ## 使用
 ```
 make
