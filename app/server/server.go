@@ -45,7 +45,7 @@ func handleCommands(s *constructor2.Server) {
 		//	fmt.Println("waiting commands....")
 		//}()
 		select {
-		case command := <-s.Commands:
+		case command := <-s.CurrentClient:
 			//fmt.Println("handleCommands", command.Query)
 			// 解析命令
 			parseCommand(command)
@@ -157,7 +157,7 @@ func readFromClient(cl *client.Client, s *constructor2.Server) bool {
 		//fmt.Println("handleConnection", string(buf))
 		// 发送客户端到单个协程，由单个协程处理
 		cl.Query = string(buf)
-		s.Commands <- cl
+		s.CurrentClient <- cl
 		return false
 	}
 }

@@ -2,6 +2,8 @@ package constructor
 
 import (
 	"github.com/ccb1900/redisbygo/pkg/client"
+	command2 "github.com/ccb1900/redisbygo/pkg/command"
+	"github.com/ccb1900/redisbygo/pkg/command/command"
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"github.com/ccb1900/redisbygo/pkg/persist/aof"
@@ -16,11 +18,12 @@ type Server struct {
 	Db               []*redisdb.RedisDb
 	No               int
 	StatRejectedConn int
-	Commands         chan *client.Client
+	CurrentClient    chan *client.Client
 	Listener         net.Listener
 	Aof              *aof.Aof
 	WaitCloseClients chan int
 	NewClients       chan net.Conn
+	Commands         map[string]command.RedisCommand
 }
 
 var gs *Server
@@ -31,7 +34,7 @@ func NewServer() *Server {
 		gs = new(Server)
 		gs.Log = log.NewLog()
 		gs.Clients = make(map[int]*client.Client, 0)
-		gs.Commands = make(chan *client.Client, 2048)
+		gs.CurrentClient = make(chan *client.Client, 2048)
 		gs.Aof = aof.New()
 
 		c := config.NewConfig()
@@ -44,6 +47,12 @@ func NewServer() *Server {
 		gs.Db = dbList
 		gs.WaitCloseClients = make(chan int, 16)
 		gs.NewClients = make(chan net.Conn, 32)
+
+		l := len(command2.RedisCommandTable)
+
+		for i := 0; i < l; i++ {
+			gs.Commands[command2.RedisCommandTable[i].Name] = command2.RedisCommandTable[i]
+		}
 	})
 
 	return gs
