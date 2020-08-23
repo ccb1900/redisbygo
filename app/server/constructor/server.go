@@ -2,7 +2,6 @@ package constructor
 
 import (
 	"github.com/ccb1900/redisbygo/pkg/client"
-	command2 "github.com/ccb1900/redisbygo/pkg/command"
 	"github.com/ccb1900/redisbygo/pkg/command/command"
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
@@ -30,30 +29,26 @@ var gs *Server
 var once sync.Once
 
 func NewServer() *Server {
-	once.Do(func() {
-		gs = new(Server)
-		gs.Log = log.NewLog()
-		gs.Clients = make(map[int]*client.Client, 0)
-		gs.CurrentClient = make(chan *client.Client, 2048)
-		gs.Aof = aof.New()
+	if gs == nil {
+		once.Do(func() {
+			gs = new(Server)
+			gs.Log = log.NewLog()
+			gs.Clients = make(map[int]*client.Client, 0)
+			gs.CurrentClient = make(chan *client.Client, 2048)
+			gs.Aof = aof.New()
 
-		c := config.NewConfig()
-		dbList := make([]*redisdb.RedisDb, c.Dbnum)
+			c := config.NewConfig()
+			dbList := make([]*redisdb.RedisDb, c.Dbnum)
 
-		for i := 0; i < len(dbList); i++ {
-			dbList[i] = redisdb.NewRedisDb(i)
-		}
+			for i := 0; i < len(dbList); i++ {
+				dbList[i] = redisdb.NewRedisDb(i)
+			}
 
-		gs.Db = dbList
-		gs.WaitCloseClients = make(chan int, 16)
-		gs.NewClients = make(chan net.Conn, 32)
-
-		l := len(command2.RedisCommandTable)
-
-		for i := 0; i < l; i++ {
-			gs.Commands[command2.RedisCommandTable[i].Name] = command2.RedisCommandTable[i]
-		}
-	})
+			gs.Db = dbList
+			gs.WaitCloseClients = make(chan int, 16)
+			gs.NewClients = make(chan net.Conn, 32)
+		})
+	}
 
 	return gs
 }

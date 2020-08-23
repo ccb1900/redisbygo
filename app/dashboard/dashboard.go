@@ -3,7 +3,7 @@ package dashboard
 import (
 	"fmt"
 	"github.com/ccb1900/redisbygo/app/server/constructor"
-	"github.com/ccb1900/redisbygo/pkg/command"
+	"github.com/ccb1900/redisbygo/pkg/command/table"
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/others"
 	"github.com/gin-gonic/gin"
@@ -26,7 +26,7 @@ func root(r *gin.Engine) func(c *gin.Context) {
 
 func commands(c *gin.Context) {
 	results := make([]string, 0)
-	for _, redisCommand := range command.RedisCommandTable {
+	for _, redisCommand := range table.RedisCommandTable {
 		results = append(results, redisCommand.Name)
 	}
 	c.JSON(200, results)

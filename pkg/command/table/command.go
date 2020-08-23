@@ -1,4 +1,4 @@
-package command
+package table
 
 import (
 	"github.com/ccb1900/redisbygo/pkg/command/command"

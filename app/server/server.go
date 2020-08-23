@@ -6,6 +6,8 @@ import (
 	constructor2 "github.com/ccb1900/redisbygo/app/server/constructor"
 	"github.com/ccb1900/redisbygo/pkg/client"
 	"github.com/ccb1900/redisbygo/pkg/client/constructor"
+	"github.com/ccb1900/redisbygo/pkg/command/command"
+	"github.com/ccb1900/redisbygo/pkg/command/table"
 	config2 "github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/ds/robj"
 	"github.com/ccb1900/redisbygo/pkg/redisdb/redisdb"
@@ -17,6 +19,11 @@ import (
 
 func InitServerConfig(s *constructor2.Server) {
 	s.Log.Info("oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo")
+	l := len(table.RedisCommandTable)
+	s.Commands = make(map[string]command.RedisCommand, l)
+	for i := 0; i < l; i++ {
+		s.Commands[table.RedisCommandTable[i].Name] = table.RedisCommandTable[i]
+	}
 }
 
 func CreateServer() {
