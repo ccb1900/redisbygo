@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"github.com/ccb1900/redisbygo/app/dashboard"
 	"github.com/ccb1900/redisbygo/app/server"
-	"github.com/ccb1900/redisbygo/pkg/config"
-	"github.com/ccb1900/redisbygo/pkg/others"
+	"github.com/ccb1900/redisbygo/pkg"
 	"os"
 	"sync"
 )
@@ -21,12 +20,12 @@ func main() {
 
 	if *version {
 		fmt.Println("test")
-		fmt.Println(others.RedisVersion)
+		fmt.Println(pkg.RedisVersion)
 	}
 	if *help {
 		flag.PrintDefaults()
 	}
-	c := config.NewConfig()
+	c := pkg.NewConfig()
 	c.Host = *host
 	c.Port = *port
 	serve()

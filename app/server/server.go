@@ -10,11 +10,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg/client/constructor"
 	"github.com/ccb1900/redisbygo/pkg/command/command"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
-	config2 "github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/ds/robj"
-	"github.com/ccb1900/redisbygo/pkg/others"
-	"github.com/ccb1900/redisbygo/pkg/redisdb/redisdb"
-	"github.com/ccb1900/redisbygo/pkg/utils"
 	"io"
 	"net"
 	"strconv"
@@ -31,7 +27,7 @@ func InitServerConfig(s *constructor2.Server) {
 
 func CreateServer() {
 	s := constructor2.NewServer()
-	c := config2.NewConfig()
+	c := pkg.NewConfig()
 	InitServerConfig(s)
 
 	s.Log.Info("server start")
@@ -68,7 +64,7 @@ func handleCommands(s *constructor2.Server) {
 // 解析命令
 func parseCommand(c client.Client) {
 	key := robj.NewRedisObject()
-	redisdb.Add(c.Db, key, key)
+	pkg.Add(c.Db, key, key)
 	// 回复
 	go response(c.Conn, "OK")
 
@@ -85,7 +81,7 @@ func ProcessInlineBuffer(c *client.Client) {
 // 回复客户端
 func response(conn net.Conn, message string) {
 	writer := bufio.NewWriter(conn)
-	_, _ = writer.WriteString(utils.ProtocolLine(message))
+	_, _ = writer.WriteString(pkg.ProtocolLine(message))
 	_ = writer.Flush()
 }
 
@@ -104,11 +100,11 @@ func acceptRequest(s *constructor2.Server) {
 				newClient := constructor.NewClient(conn)
 				newClient.Index = s.No
 				newClient.Db = s.Db[0]
-				cc := config2.NewConfig()
+				cc := pkg.NewConfig()
 
 				if len(s.Clients) >= cc.Maxclients {
 					w := bufio.NewWriter(newClient.Conn)
-					_, _ = w.WriteString(utils.ProtocolLineErr("ERR max number of clients reached"))
+					_, _ = w.WriteString(pkg.ProtocolLineErr("ERR max number of clients reached"))
 					s.StatRejectedConn++
 					_ = w.Flush()
 
@@ -148,7 +144,7 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 
 	for {
 		// 一次读取16kb
-		readLen := others.ProtoIoBufLen
+		readLen := pkg.ProtoIoBufLen
 		buf := make([]byte, readLen)
 		//qbLen := len(cl.QueryBuf)
 		fmt.Println("querybufs", string(cl.QueryBuf))
@@ -166,15 +162,21 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 			s.WaitCloseClients <- cl.Index
 			//fmt.Println("handleConnection trigger delete::", cl.Index)
 			// 结束循环，回收协程
+			break
 		} else {
 			cl.QueryBuf = append(cl.QueryBuf, buf[:size]...)
+			fmt.Println("realbuf1::", string(cl.QueryBuf))
 			if cl.MultiBulkLen == 0 {
 				pos := bytes.Index(cl.QueryBuf, []byte{'\r', '\n'})
 				if pos > 0 && cl.QueryBuf[0] == '*' {
 					cl.MultiBulkLen = pkg.S2Int(string(cl.QueryBuf[1:pos]))
 					cl.QueryBuf = cl.QueryBuf[pos+2:]
 				} else {
-					continue
+					if pos > 0 && cl.QueryBuf[0] != '*' {
+						cl.Argv = append(cl.Argv, string(cl.QueryBuf[0:pos]))
+					} else {
+						continue
+					}
 				}
 
 			}

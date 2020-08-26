@@ -1,4 +1,4 @@
-package redisdb
+package pkg
 
 import (
 	"github.com/ccb1900/redisbygo/pkg/ds/robj"

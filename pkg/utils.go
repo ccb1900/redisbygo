@@ -1,7 +1,6 @@
-package utils
+package pkg
 
 import (
-	"github.com/ccb1900/redisbygo/pkg/others"
 	"strconv"
 )
 
@@ -52,5 +51,5 @@ func ProtocolArr(messages []string) string {
 
 // 包装协议函数
 func protocol(message string, prefix string) string {
-	return prefix + message + others.CRLF
+	return prefix + message + CRLF
 }

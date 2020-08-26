@@ -1,4 +1,4 @@
-package others
+package pkg
 
 const RedisVersion = "5.0.5"
 const CRLF = "\r\n"
@@ -22,8 +22,8 @@ var CommandGroups = [...]string{
 }
 
 const ProtoMaxQueryBufLen = 1024 * 1024 * 1024 /* 1GB max query buffer. */
-//const ProtoIoBufLen = 2                        /* Generic I/O buffer size */
-const ProtoIoBufLen = 1024 * 16        /* Generic I/O buffer size */
+const ProtoIoBufLen = 2                        /* Generic I/O buffer size */
+//const ProtoIoBufLen = 1024 * 16        /* Generic I/O buffer size */
 const ProtoReplyChunkBytes = 16 * 1024 /* 16k output buffer */
 const ProtoInlineMaxSize = 1024 * 64   /* Max size of inline reads */
 const ProtoMBulkBigArg = 1024 * 32

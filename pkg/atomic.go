@@ -1,4 +1,4 @@
-package atomic
+package pkg
 
 //func Incr(value, count) {
 //

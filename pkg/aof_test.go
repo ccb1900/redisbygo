@@ -1,4 +1,4 @@
-package aof
+package pkg
 
 import "testing"
 

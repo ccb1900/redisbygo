@@ -1,12 +1,10 @@
 package constructor
 
 import (
+	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/client"
 	"github.com/ccb1900/redisbygo/pkg/command/command"
-	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
-	"github.com/ccb1900/redisbygo/pkg/others"
-	"github.com/ccb1900/redisbygo/pkg/persist/aof"
 	"github.com/ccb1900/redisbygo/pkg/redisdb"
 	"net"
 	"sync"
@@ -20,7 +18,7 @@ type Server struct {
 	StatRejectedConn     int
 	CurrentClient        chan client.Client
 	Listener             net.Listener
-	Aof                  *aof.Aof
+	Aof                  *pkg.Aof
 	WaitCloseClients     chan int
 	NewClients           chan net.Conn
 	Commands             map[string]command.RedisCommand
@@ -37,9 +35,9 @@ func NewServer() *Server {
 			gs.Log = log.NewLog()
 			gs.Clients = make(map[int]*client.Client, 0)
 			gs.CurrentClient = make(chan client.Client, 2048)
-			gs.Aof = aof.New()
+			gs.Aof = pkg.New()
 
-			c := config.NewConfig()
+			c := pkg.NewConfig()
 			dbList := make([]*redisdb.RedisDb, c.Dbnum)
 
 			for i := 0; i < len(dbList); i++ {
@@ -49,7 +47,7 @@ func NewServer() *Server {
 			gs.Db = dbList
 			gs.WaitCloseClients = make(chan int, 16)
 			gs.NewClients = make(chan net.Conn, 32)
-			gs.ClientMaxQueryBufLen = others.ProtoMaxQueryBufLen
+			gs.ClientMaxQueryBufLen = pkg.ProtoMaxQueryBufLen
 		})
 	}
 

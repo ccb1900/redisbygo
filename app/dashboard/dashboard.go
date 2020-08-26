@@ -3,9 +3,8 @@ package dashboard
 import (
 	"fmt"
 	"github.com/ccb1900/redisbygo/app/server/constructor"
+	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
-	"github.com/ccb1900/redisbygo/pkg/config"
-	"github.com/ccb1900/redisbygo/pkg/others"
 	"github.com/gin-gonic/gin"
 	"os"
 	"runtime"
@@ -33,7 +32,7 @@ func commands(c *gin.Context) {
 }
 
 func configs(c *gin.Context) {
-	s := config.NewConfig()
+	s := pkg.NewConfig()
 	c.JSON(200, s)
 }
 
@@ -109,8 +108,8 @@ func metrics(c *gin.Context) {
 		count += len(s.Db[i].Dict)
 	}
 	c.JSON(200, ServerInfo{
-		RedisVersion:   others.RedisVersion,
-		CRLF:           others.CRLF,
+		RedisVersion:   pkg.RedisVersion,
+		CRLF:           pkg.CRLF,
 		GoVersion:      runtime.Version(),
 		CPUNum:         runtime.NumCPU(),
 		GoRoutineNum:   runtime.NumGoroutine(),

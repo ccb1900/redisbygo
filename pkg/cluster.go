@@ -1,4 +1,4 @@
-package cluster
+package pkg
 
 type ClusterNode struct {
 }
