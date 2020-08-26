@@ -2,14 +2,17 @@ package server
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	constructor2 "github.com/ccb1900/redisbygo/app/server/constructor"
+	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/client"
 	"github.com/ccb1900/redisbygo/pkg/client/constructor"
 	"github.com/ccb1900/redisbygo/pkg/command/command"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
 	config2 "github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/ds/robj"
+	"github.com/ccb1900/redisbygo/pkg/others"
 	"github.com/ccb1900/redisbygo/pkg/redisdb/redisdb"
 	"github.com/ccb1900/redisbygo/pkg/utils"
 	"io"
@@ -52,10 +55,10 @@ func handleCommands(s *constructor2.Server) {
 		//	fmt.Println("waiting commands....")
 		//}()
 		select {
-		case command := <-s.CurrentClient:
+		case cm := <-s.CurrentClient:
 			//fmt.Println("handleCommands", command.Query)
 			// 解析命令
-			parseCommand(command)
+			parseCommand(cm)
 			// 写入aof
 			//s.Aof.Write(command.Query)
 		}
@@ -63,11 +66,20 @@ func handleCommands(s *constructor2.Server) {
 }
 
 // 解析命令
-func parseCommand(c *client.Client) {
+func parseCommand(c client.Client) {
 	key := robj.NewRedisObject()
 	redisdb.Add(c.Db, key, key)
 	// 回复
 	go response(c.Conn, "OK")
+
+	fmt.Println(c.Argv)
+}
+
+// 处理单行命令
+func ProcessInlineBuffer(c *client.Client) {
+	// 读取内容
+	// 分离字符串
+	// 创建roj对象
 }
 
 // 回复客户端
@@ -135,36 +147,62 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 	s.Log.Info(cl.Conn.RemoteAddr().String())
 
 	for {
-		if readFromClient(cl, s) {
-			break
-		}
-	}
-}
-
-func readFromClient(cl *client.Client, s *constructor2.Server) bool {
-	buf := make([]byte, 1024)
-	size, err := cl.Conn.Read(buf)
-	//go func() {
-	//	fmt.Println("size::", size, "err::", err)
-	//}()
-	if size == 0 && err == io.EOF {
-		// 客户端关闭
-		err = cl.Conn.Close()
-		if err != nil {
-			//fmt.Println("close client fail::", err)
+		// 一次读取16kb
+		readLen := others.ProtoIoBufLen
+		buf := make([]byte, readLen)
+		//qbLen := len(cl.QueryBuf)
+		fmt.Println("querybufs", string(cl.QueryBuf))
+		size, err := cl.Conn.Read(buf)
+		fmt.Println("size::", size, "err::", err)
+		if size == 0 && err == io.EOF {
+			// 客户端关闭
+			err = cl.Conn.Close()
+			if err != nil {
+				//fmt.Println("close client fail::", err)
+			} else {
+				//fmt.Println("close client success::")
+			}
+			// 删除客户端
+			s.WaitCloseClients <- cl.Index
+			//fmt.Println("handleConnection trigger delete::", cl.Index)
+			// 结束循环，回收协程
 		} else {
-			//fmt.Println("close client success::")
+			cl.QueryBuf = append(cl.QueryBuf, buf[:size]...)
+			if cl.MultiBulkLen == 0 {
+				pos := bytes.Index(cl.QueryBuf, []byte{'\r', '\n'})
+				if pos > 0 && cl.QueryBuf[0] == '*' {
+					cl.MultiBulkLen = pkg.S2Int(string(cl.QueryBuf[1:pos]))
+					cl.QueryBuf = cl.QueryBuf[pos+2:]
+				} else {
+					continue
+				}
+
+			}
+
+			for cl.MultiBulkLen > 0 {
+				fmt.Println("realbuf::", string(cl.QueryBuf))
+				pos := bytes.Index(cl.QueryBuf[0:], []byte{'\r', '\n'})
+
+				if pos == -1 {
+					break
+				}
+				if cl.QueryBuf[0] == '$' {
+					cl.BulkLen = pkg.S2Int(string(cl.QueryBuf[1:pos]))
+				} else {
+					cl.Argv = append(cl.Argv, string(cl.QueryBuf[0:pos]))
+					cl.MultiBulkLen--
+				}
+
+				cl.QueryBuf = cl.QueryBuf[pos+2:]
+			}
+
+			if cl.MultiBulkLen == 0 {
+				s.CurrentClient <- *cl
+				cl.MultiBulkLen = 0
+				cl.Argv = make([]string, 0)
+				cl.BulkLen = -1
+				cl.QueryBuf = make([]byte, 0)
+			}
 		}
-		// 删除客户端
-		s.WaitCloseClients <- cl.Index
-		//fmt.Println("handleConnection trigger delete::", cl.Index)
-		// 结束循环，回收协程
-		return true
-	} else {
-		//fmt.Println("handleConnection", string(buf))
-		// 发送客户端到单个协程，由单个协程处理
-		cl.Query = string(buf)
-		s.CurrentClient <- cl
-		return false
 	}
 }

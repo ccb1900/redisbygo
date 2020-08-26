@@ -20,3 +20,12 @@ var CommandGroups = [...]string{
 	"geo",
 	"stream",
 }
+
+const ProtoMaxQueryBufLen = 1024 * 1024 * 1024 /* 1GB max query buffer. */
+//const ProtoIoBufLen = 2                        /* Generic I/O buffer size */
+const ProtoIoBufLen = 1024 * 16        /* Generic I/O buffer size */
+const ProtoReplyChunkBytes = 16 * 1024 /* 16k output buffer */
+const ProtoInlineMaxSize = 1024 * 64   /* Max size of inline reads */
+const ProtoMBulkBigArg = 1024 * 32
+const LongStrSize = 21                      /* Bytes needed for long -> str + '\0' */
+const RedisAutoSyncBytes = 1024 * 1024 * 32 /* fdatasync every 32MB */
