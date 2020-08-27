@@ -53,3 +53,5 @@ const (
 	ObjModule = iota
 	ObjStream = iota
 )
+
+const LookupNone = 0

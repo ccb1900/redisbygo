@@ -73,3 +73,13 @@ func (cl *Client) AddReplySubcommandSyntaxError() {
 		cl.Cmd.Name,
 	}, "Unknown subcommand or wrong number of arguments for '%s'.", "Try %s HELP.")
 }
+
+func (cl *Client) LookupKeyReadOrReply(key *RedisObject, reply *RedisObject) *RedisObject {
+	o := cl.Db.LookupKeyRead(key)
+
+	if o == nil {
+		cl.AddReplyRedisObject(reply)
+		cl.AddReplyRedisObject(reply)
+	}
+	return o
+}

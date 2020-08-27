@@ -12,6 +12,7 @@ type Shared struct {
 	CZero     *pkg.RedisObject
 	Cone      *pkg.RedisObject
 	Pong      *pkg.RedisObject
+	NullBulk  *pkg.RedisObject
 }
 
 var once sync.Once
@@ -21,7 +22,11 @@ func NewShared() *Shared {
 	once.Do(func() {
 		shared = new(Shared)
 		s := "PONG"
+		nullBulk := "$-1\\r\\n"
+		ok := "OK"
 		shared.Pong = pkg.NewRedisObject(pkg.ObjString, &s)
+		shared.Ok = pkg.NewRedisObject(pkg.ObjString, &ok)
+		shared.NullBulk = pkg.NewRedisObject(pkg.ObjString, &nullBulk)
 	})
 	return shared
 }
