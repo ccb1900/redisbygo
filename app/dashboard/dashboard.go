@@ -2,7 +2,6 @@ package dashboard
 
 import (
 	"fmt"
-	"github.com/ccb1900/redisbygo/app/server/constructor"
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
 	"github.com/gin-gonic/gin"
@@ -37,7 +36,7 @@ func configs(c *gin.Context) {
 }
 
 func clients(c *gin.Context) {
-	s := constructor.NewServer()
+	s := pkg.NewServer()
 	type cl struct {
 		Addr  string
 		Index int
@@ -64,7 +63,7 @@ func keys(c *gin.Context) {
 	}
 	results := make([]key, 0)
 
-	s := constructor.NewServer()
+	s := pkg.NewServer()
 
 	for _, d := range s.Db {
 		dd := d.Dict
@@ -99,7 +98,7 @@ func metrics(c *gin.Context) {
 		Envs           []string
 	}
 
-	s := constructor.NewServer()
+	s := pkg.NewServer()
 
 	hostname, _ := os.Hostname()
 	count := 0

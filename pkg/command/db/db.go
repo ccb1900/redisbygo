@@ -1,12 +1,11 @@
 package db
 
 import (
-	"github.com/ccb1900/redisbygo/app/server/constructor"
-	"github.com/ccb1900/redisbygo/pkg/client"
+	"github.com/ccb1900/redisbygo/pkg"
 )
 
-func SelectDbCommand(c *client.Client) {
-	s := constructor.NewServer()
+func SelectDbCommand(c *pkg.Client) {
+	s := pkg.NewServer()
 
 	c.Db = s.Db[1]
 }

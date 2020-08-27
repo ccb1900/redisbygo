@@ -1,10 +1,8 @@
-package command
-
-import "github.com/ccb1900/redisbygo/pkg/client"
+package pkg
 
 type RedisCommand struct {
 	Name         string
-	Proc         func(c *client.Client)
+	Proc         func(c *Client)
 	Arity        int
 	SFlags       string
 	Flags        int
@@ -14,4 +12,8 @@ type RedisCommand struct {
 	KeyStep      int
 	Microseconds int
 	Calls        int
+}
+
+func (rc *RedisCommand) Run(cl *Client) {
+
 }

@@ -71,7 +71,7 @@ func (a *Aof) Close() {
 	}
 }
 
-func New() *Aof {
+func NewAof() *Aof {
 	a := new(Aof)
 	a.Create()
 	return a

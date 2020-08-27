@@ -4,29 +4,25 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	constructor2 "github.com/ccb1900/redisbygo/app/server/constructor"
 	"github.com/ccb1900/redisbygo/pkg"
-	"github.com/ccb1900/redisbygo/pkg/client"
 	"github.com/ccb1900/redisbygo/pkg/client/constructor"
-	"github.com/ccb1900/redisbygo/pkg/command/command"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
-	"github.com/ccb1900/redisbygo/pkg/ds/robj"
 	"io"
 	"net"
 	"strconv"
 )
 
-func InitServerConfig(s *constructor2.Server) {
+func InitServerConfig(s *pkg.Server) {
 	s.Log.Info("oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo")
 	l := len(table.RedisCommandTable)
-	s.Commands = make(map[string]command.RedisCommand, l)
+	s.Commands = make(map[string]*pkg.RedisCommand, l)
 	for i := 0; i < l; i++ {
-		s.Commands[table.RedisCommandTable[i].Name] = table.RedisCommandTable[i]
+		s.Commands[table.RedisCommandTable[i].Name] = &table.RedisCommandTable[i]
 	}
 }
 
 func CreateServer() {
-	s := constructor2.NewServer()
+	s := pkg.NewServer()
 	c := pkg.NewConfig()
 	InitServerConfig(s)
 
@@ -45,7 +41,7 @@ func CreateServer() {
 }
 
 // 处理命令
-func handleCommands(s *constructor2.Server) {
+func handleCommands(s *pkg.Server) {
 	for {
 		//go func() {
 		//	fmt.Println("waiting commands....")
@@ -61,18 +57,52 @@ func handleCommands(s *constructor2.Server) {
 	}
 }
 
-// 解析命令
-func parseCommand(c client.Client) {
-	key := robj.NewRedisObject()
-	pkg.Add(c.Db, key, key)
-	// 回复
-	go response(c.Conn, "OK")
+func lookupCommand(cmd string) *pkg.RedisCommand {
+	s := pkg.NewServer()
+	return s.Commands[cmd]
+}
+func getCommandMessage(ss []*pkg.RedisObject) []string {
+	s := make([]string, 0)
+	for i := 0; i < len(ss); i++ {
+		s = append(s, *ss[i].Ptr.(*string))
+	}
 
-	fmt.Println(c.Argv)
+	return s
+}
+
+// 解析命令
+func parseCommand(c pkg.Client) bool {
+	c.LastCmd = lookupCommand(*c.Argv[0].Ptr.(*string))
+	c.Cmd = c.LastCmd
+	errCommand := []string{"ERR unknown command `%s`,",
+		"with args beginning with: `%s`,"}
+	errArgument := "wrong number of arguments for '%s' command"
+	if c.Cmd == nil {
+		c.AddReplyErrorFormat(getCommandMessage(c.Argv), errCommand...)
+		return true
+	} else if (c.Cmd.Arity > 0 && c.Cmd.Arity != len(c.Argv)) || (len(c.Argv) < -c.Cmd.Arity) {
+		c.AddReplyErrorFormat([]string{c.Cmd.Name}, errArgument)
+		return true
+	}
+	// 检查是否需要密码
+
+	// 检查集群
+
+	// 处理最大内存
+
+	// 不接受写命令的情况处理
+
+	// 发布订阅的上下文
+
+	// 执行命令
+
+	//fmt.Println(c.Argv)
+	c.Cmd.Proc(&c)
+	return true
 }
 
 // 处理单行命令
-func ProcessInlineBuffer(c *client.Client) {
+func ProcessInlineBuffer(c *pkg.Client) {
 	// 读取内容
 	// 分离字符串
 	// 创建roj对象
@@ -85,8 +115,14 @@ func response(conn net.Conn, message string) {
 	_ = writer.Flush()
 }
 
+func errorResponse(conn net.Conn, message string) {
+	writer := bufio.NewWriter(conn)
+	_, _ = writer.WriteString(pkg.ProtocolLineErr(message))
+	_ = writer.Flush()
+}
+
 // 接受客户端请求
-func acceptRequest(s *constructor2.Server) {
+func acceptRequest(s *pkg.Server) {
 	go func() {
 		for {
 			select {
@@ -138,7 +174,7 @@ func acceptRequest(s *constructor2.Server) {
 }
 
 // 处理客户端连接
-func handleConnection(s *constructor2.Server, cl *client.Client) {
+func handleConnection(s *pkg.Server, cl *pkg.Client) {
 	//s.Log.Info("new client")
 	s.Log.Info(cl.Conn.RemoteAddr().String())
 
@@ -147,9 +183,9 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 		readLen := pkg.ProtoIoBufLen
 		buf := make([]byte, readLen)
 		//qbLen := len(cl.QueryBuf)
-		fmt.Println("querybufs", string(cl.QueryBuf))
+		//fmt.Println("querybufs", string(cl.QueryBuf))
 		size, err := cl.Conn.Read(buf)
-		fmt.Println("size::", size, "err::", err)
+		//fmt.Println("size::", size, "err::", err)
 		if size == 0 && err == io.EOF {
 			// 客户端关闭
 			err = cl.Conn.Close()
@@ -165,7 +201,7 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 			break
 		} else {
 			cl.QueryBuf = append(cl.QueryBuf, buf[:size]...)
-			fmt.Println("realbuf1::", string(cl.QueryBuf))
+			//fmt.Println("realbuf1::", string(cl.QueryBuf))
 			if cl.MultiBulkLen == 0 {
 				pos := bytes.Index(cl.QueryBuf, []byte{'\r', '\n'})
 				if pos > 0 && cl.QueryBuf[0] == '*' {
@@ -173,7 +209,8 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 					cl.QueryBuf = cl.QueryBuf[pos+2:]
 				} else {
 					if pos > 0 && cl.QueryBuf[0] != '*' {
-						cl.Argv = append(cl.Argv, string(cl.QueryBuf[0:pos]))
+						ptr := string(cl.QueryBuf[0:pos])
+						cl.Argv = append(cl.Argv, pkg.NewRedisObject(pkg.ObjString, &ptr))
 					} else {
 						continue
 					}
@@ -182,7 +219,7 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 			}
 
 			for cl.MultiBulkLen > 0 {
-				fmt.Println("realbuf::", string(cl.QueryBuf))
+				//fmt.Println("realbuf::", string(cl.QueryBuf))
 				pos := bytes.Index(cl.QueryBuf[0:], []byte{'\r', '\n'})
 
 				if pos == -1 {
@@ -191,7 +228,8 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 				if cl.QueryBuf[0] == '$' {
 					cl.BulkLen = pkg.S2Int(string(cl.QueryBuf[1:pos]))
 				} else {
-					cl.Argv = append(cl.Argv, string(cl.QueryBuf[0:pos]))
+					ptr := string(cl.QueryBuf[0:pos])
+					cl.Argv = append(cl.Argv, pkg.NewRedisObject(pkg.ObjString, &ptr))
 					cl.MultiBulkLen--
 				}
 
@@ -201,7 +239,7 @@ func handleConnection(s *constructor2.Server, cl *client.Client) {
 			if cl.MultiBulkLen == 0 {
 				s.CurrentClient <- *cl
 				cl.MultiBulkLen = 0
-				cl.Argv = make([]string, 0)
+				cl.Argv = make([]*pkg.RedisObject, 0)
 				cl.BulkLen = -1
 				cl.QueryBuf = make([]byte, 0)
 			}
