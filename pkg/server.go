@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
 	"sync"
@@ -35,7 +36,7 @@ func NewServer() *Server {
 			gs.Aof = NewAof()
 			gs.RequirePass = false
 
-			c := NewConfig()
+			c := config.NewConfig()
 			dbList := make([]*RedisDb, c.Dbnum)
 
 			for i := 0; i < len(dbList); i++ {

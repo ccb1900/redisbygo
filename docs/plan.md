@@ -8,6 +8,13 @@
 - 发布订阅
 - 过期
 
+## 命令支持
+- ping
+- echo
+- config
+- get
+- set
+
 ```c
 struct redisCommand redisCommandTable[] = {
     {"module",moduleCommand,-2,"as",0,NULL,0,0,0,0,0},

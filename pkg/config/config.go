@@ -1,4 +1,4 @@
-package pkg
+package config
 
 import (
 	"fmt"
@@ -23,10 +23,10 @@ type Config struct {
 var instance *Config
 var once sync.Once
 
-func NewConfig() *Config {
+func GetInstance(path string) *Config {
 	once.Do(func() {
 		instance = new(Config)
-		viper.SetConfigFile("./server.json")
+		viper.SetConfigFile(path)
 		viper.SetConfigType("json")
 		//viper.AddConfigPath(".")
 
@@ -50,4 +50,7 @@ func NewConfig() *Config {
 	})
 
 	return instance
+}
+func NewConfig() *Config {
+	return GetInstance("./server.json")
 }

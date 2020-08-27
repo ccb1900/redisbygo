@@ -6,6 +6,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/client/constructor"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
+	"github.com/ccb1900/redisbygo/pkg/config"
 	"io"
 	"net"
 	"strconv"
@@ -22,7 +23,7 @@ func InitServerConfig(s *pkg.Server) {
 
 func CreateServer() {
 	s := pkg.NewServer()
-	c := pkg.NewConfig()
+	c := config.NewConfig()
 	InitServerConfig(s)
 
 	s.Log.Info("server start")
@@ -129,7 +130,7 @@ func acceptRequest(s *pkg.Server) {
 				newClient := constructor.NewClient(conn)
 				newClient.Index = s.No
 				newClient.Db = s.Db[0]
-				cc := pkg.NewConfig()
+				cc := config.NewConfig()
 
 				if len(s.Clients) >= cc.Maxclients {
 					w := bufio.NewWriter(newClient.Conn)

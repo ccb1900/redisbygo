@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
+	"strings"
 )
 
 type Client struct {
@@ -60,4 +61,15 @@ func (cl *Client) AddReplyBulk(object *RedisObject) {
 }
 func (cl *Client) AddReplyBulkLen(object *RedisObject) {
 
+}
+
+func (cl *Client) AddReplyHelp(help []string) {
+	cl.AddReply(strings.Join(help, ","))
+}
+
+func (cl *Client) AddReplySubcommandSyntaxError() {
+	cl.AddReplyErrorFormat([]string{
+		*cl.Argv[1].Ptr.(*string),
+		cl.Cmd.Name,
+	}, "Unknown subcommand or wrong number of arguments for '%s'.", "Try %s HELP.")
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/ccb1900/redisbygo/app/dashboard"
 	"github.com/ccb1900/redisbygo/app/server"
 	"github.com/ccb1900/redisbygo/pkg"
+	"github.com/ccb1900/redisbygo/pkg/config"
 	"os"
 	"sync"
 )
@@ -25,7 +26,7 @@ func main() {
 	if *help {
 		flag.PrintDefaults()
 	}
-	c := pkg.NewConfig()
+	c := config.NewConfig()
 	c.Host = *host
 	c.Port = *port
 	serve()

@@ -3,6 +3,7 @@ package dashboard
 import (
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
+	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/gin-gonic/gin"
 	"os"
 	"runtime"
@@ -30,7 +31,7 @@ func commands(c *gin.Context) {
 }
 
 func configs(c *gin.Context) {
-	s := pkg.NewConfig()
+	s := config.NewConfig()
 	c.JSON(200, s)
 }
 
