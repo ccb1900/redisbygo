@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"runtime"
-	"strconv"
 	"time"
 )
 
@@ -65,11 +64,11 @@ func keys(c *gin.Context) {
 	s := pkg.NewServer()
 
 	for _, d := range s.Db {
-		dd := d.Dict
+		dd := d.Dict.Storage
 		for k := range dd {
 			results = append(results, key{
-				Name: strconv.Itoa(k.Encoding),
-				Type: strconv.Itoa(k.Encoding),
+				Name: k,
+				Type: k,
 				Db:   d.Id,
 			})
 		}
@@ -103,7 +102,7 @@ func metrics(c *gin.Context) {
 	count := 0
 
 	for i := 0; i < len(s.Db); i++ {
-		count += len(s.Db[i].Dict)
+		count += len(s.Db[i].Dict.Storage)
 	}
 	c.JSON(200, ServerInfo{
 		RedisVersion:   pkg.RedisVersion,
