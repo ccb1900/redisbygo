@@ -3,7 +3,6 @@ package server
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/client/constructor"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
@@ -43,15 +42,9 @@ func CreateServer() {
 // 处理命令
 func handleCommands(s *pkg.Server) {
 	for {
-		//go func() {
-		//	fmt.Println("waiting commands....")
-		//}()
 		select {
 		case cm := <-s.CurrentClient:
-			//fmt.Println("handleCommands", command.Query)
-			// 解析命令
 			parseCommand(cm)
-			// 写入aof
 			//s.Aof.Write(command.Query)
 		}
 	}
@@ -143,14 +136,8 @@ func acceptRequest(s *pkg.Server) {
 					_, _ = w.WriteString(pkg.ProtocolLineErr("ERR max number of clients reached"))
 					s.StatRejectedConn++
 					_ = w.Flush()
-
-					fmt.Println("client up to max")
 				} else {
 					s.Clients[s.No] = newClient
-					//go func() {
-					//	fmt.Println("accept client::")
-					//}()
-
 					go handleConnection(s, newClient)
 				}
 			}
@@ -163,7 +150,6 @@ func acceptRequest(s *pkg.Server) {
 		conn, err := s.Listener.Accept()
 		//s.Log.Info("waiting connecting2...")
 		if err != nil {
-			fmt.Println("client reach but fail::", err)
 			s.Log.Info(err.Error())
 		} else {
 			go func() {

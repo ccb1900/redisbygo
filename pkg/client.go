@@ -40,7 +40,13 @@ func (cl *Client) AddReplyErrorFormat(args []string, messages ...string) {
 	s := ""
 
 	for i := 0; i < len(args); i++ {
-		s += fmt.Sprintf(messages[i], args[i])
+		message := ""
+		if i > 1 {
+			message = messages[1]
+		} else {
+			message = messages[0]
+		}
+		s += fmt.Sprintf(message, args[i])
 	}
 
 	cl.reply(ProtocolLineErr(s))

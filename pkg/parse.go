@@ -2,16 +2,13 @@ package pkg
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 )
 
 func ParseProtocol() {
 	s := []byte("*3\r\n$3\r\nset\r\n$1\r\na\r\n$1\r\nb\r\n")
 
-	//fmt.Println(bytes.Index(s[:4], []byte("\r\n")))
 	buf := make([]byte, 0)
-	bulkLen := -1
 	mulBulkLen := 0
 	argv := make([]string, 0)
 	//p := 0
@@ -25,7 +22,6 @@ func ParseProtocol() {
 
 		// 如果buf包含了多行
 		buf = append(buf, queryBuf...)
-		fmt.Println("buf", string(buf))
 		// 检查协议长度
 		if mulBulkLen == 0 {
 			pos := bytes.Index(buf, []byte{'\r', '\n'})
@@ -41,7 +37,7 @@ func ParseProtocol() {
 					break
 				}
 				if buf[0] == '$' {
-					bulkLen = S2Int(string(buf[1:pos]))
+					//bulkLen = S2Int(string(buf[1:pos]))
 				} else {
 					argv = append(argv, string(buf[0:pos]))
 					mulBulkLen--
@@ -49,11 +45,7 @@ func ParseProtocol() {
 				buf = buf[pos+2:]
 			}
 		}
-
-		fmt.Println("remain", string(buf), bulkLen)
 	}
-
-	fmt.Println(argv)
 }
 
 func S2Int(s string) int {

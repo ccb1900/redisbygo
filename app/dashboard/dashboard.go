@@ -1,7 +1,6 @@
 package dashboard
 
 import (
-	"fmt"
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
 	"github.com/gin-gonic/gin"
@@ -43,8 +42,7 @@ func clients(c *gin.Context) {
 		Db    int
 	}
 	results := make([]*cl, 0)
-	for i, cc := range s.Clients {
-		fmt.Println("r::", i, cc.Index)
+	for _, cc := range s.Clients {
 		results = append(results, &cl{
 			Addr:  cc.Conn.RemoteAddr().String(),
 			Index: cc.Index,

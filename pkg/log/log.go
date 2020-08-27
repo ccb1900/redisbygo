@@ -16,10 +16,10 @@ func NewLog() *Log {
 }
 
 func (l *Log) Info(message string) {
-	log.Info(message)
+	//log.Info(message)
 	//log.Warn(message)
 }
 func (l *Log) Log(message string, level int) {
 	//log.Info(message)
-	log.Warn(message)
+	//log.Warn(message)
 }
