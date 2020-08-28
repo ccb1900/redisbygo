@@ -6,13 +6,14 @@ import (
 )
 
 type Shared struct {
-	CRLF      *pkg.RedisObject
-	Ok        *pkg.RedisObject
-	EmptyBulk *pkg.RedisObject
-	CZero     *pkg.RedisObject
-	Cone      *pkg.RedisObject
-	Pong      *pkg.RedisObject
-	NullBulk  *pkg.RedisObject
+	CRLF         *pkg.RedisObject
+	Ok           *pkg.RedisObject
+	EmptyBulk    *pkg.RedisObject
+	CZero        *pkg.RedisObject
+	Cone         *pkg.RedisObject
+	Pong         *pkg.RedisObject
+	NullBulk     *pkg.RedisObject
+	WrongTypeErr *pkg.RedisObject
 }
 
 var once sync.Once

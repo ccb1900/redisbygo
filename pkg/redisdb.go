@@ -31,3 +31,7 @@ func (rb *RedisDb) LookupKeyReadWithFlags(key *RedisObject, flags int) *RedisObj
 func (rb *RedisDb) LookupKeyRead(key *RedisObject) *RedisObject {
 	return rb.LookupKeyReadWithFlags(key, LookupNone)
 }
+
+func (rb RedisDb) LookupKeyWrite(key *RedisObject) *RedisObject {
+	return nil
+}
