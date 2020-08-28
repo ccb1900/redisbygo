@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/ccb1900/redisbygo/pkg"
-	"github.com/ccb1900/redisbygo/pkg/client/constructor"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"io"
@@ -44,9 +43,11 @@ func CreateServer() {
 func handleCommands(s *pkg.Server) {
 	for {
 		select {
-		case cm := <-s.CurrentClient:
-			parseCommand(cm)
+		case cl := <-s.CurrentClient:
+			parseCommand(cl)
 			//s.Aof.Write(command.Query)
+			cl.Free()
+			cl.Pending <- new(pkg.Pending)
 		}
 	}
 }
@@ -65,7 +66,7 @@ func getCommandMessage(ss []*pkg.RedisObject) []string {
 }
 
 // 解析命令
-func parseCommand(c pkg.Client) bool {
+func parseCommand(c *pkg.Client) bool {
 	c.LastCmd = lookupCommand(*c.Argv[0].Ptr.(*string))
 	c.Cmd = c.LastCmd
 	errCommand := []string{"ERR unknown command `%s`,",
@@ -91,7 +92,7 @@ func parseCommand(c pkg.Client) bool {
 	// 执行命令
 
 	//fmt.Println(c.Argv)
-	c.Cmd.Proc(&c)
+	c.Cmd.Proc(c)
 	return true
 }
 
@@ -121,13 +122,10 @@ func acceptRequest(s *pkg.Server) {
 		for {
 			select {
 			case index := <-s.WaitCloseClients:
-				//fmt.Println("acceptRequest trigger delete1")
 				delete(s.Clients, index)
-				//fmt.Println("acceptRequest trigger delete2")
 			case conn := <-s.NewClients:
-				//fmt.Println("new client is coming...")
 				s.No = s.No + 1
-				newClient := constructor.NewClient(conn)
+				newClient := pkg.NewClient(conn)
 				newClient.Index = s.No
 				newClient.Db = s.Db[0]
 				cc := config.NewConfig()
@@ -164,27 +162,22 @@ func acceptRequest(s *pkg.Server) {
 func handleConnection(s *pkg.Server, cl *pkg.Client) {
 	//s.Log.Info("new client")
 	s.Log.Info(cl.Conn.RemoteAddr().String())
-
+	cl.Pending <- new(pkg.Pending)
 	for {
+		<-cl.Pending
 		// 一次读取16kb
 		readLen := pkg.ProtoIoBufLen
 		buf := make([]byte, readLen)
-		//qbLen := len(cl.QueryBuf)
-		//fmt.Println("querybufs", string(cl.QueryBuf))
 		size, err := cl.Conn.Read(buf)
-		//fmt.Println("size::", size, "err::", err)
 		if size == 0 && err == io.EOF {
-			// 客户端关闭
 			err = cl.Conn.Close()
 			if err != nil {
-				//fmt.Println("close client fail::", err)
+
 			} else {
-				//fmt.Println("close client success::")
+
 			}
 			// 删除客户端
 			s.WaitCloseClients <- cl.Index
-			//fmt.Println("handleConnection trigger delete::", cl.Index)
-			// 结束循环，回收协程
 			break
 		} else {
 			cl.QueryBuf = append(cl.QueryBuf, buf[:size]...)
@@ -199,6 +192,7 @@ func handleConnection(s *pkg.Server, cl *pkg.Client) {
 						ptr := string(cl.QueryBuf[0:pos])
 						cl.Argv = append(cl.Argv, pkg.NewRedisObject(pkg.ObjString, &ptr))
 					} else {
+						cl.Pending <- new(pkg.Pending)
 						continue
 					}
 				}
@@ -224,12 +218,11 @@ func handleConnection(s *pkg.Server, cl *pkg.Client) {
 			}
 
 			if cl.MultiBulkLen == 0 {
-				s.CurrentClient <- *cl
-				cl.MultiBulkLen = 0
-				cl.Argv = make([]*pkg.RedisObject, 0)
-				cl.BulkLen = -1
-				cl.QueryBuf = make([]byte, 0)
+				s.CurrentClient <- cl
+			} else {
+				cl.Pending <- new(pkg.Pending)
 			}
 		}
+
 	}
 }

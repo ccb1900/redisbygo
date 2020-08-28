@@ -22,8 +22,8 @@ var CommandGroups = [...]string{
 }
 
 const ProtoMaxQueryBufLen = 1024 * 1024 * 1024 /* 1GB max query buffer. */
-const ProtoIoBufLen = 2                        /* Generic I/O buffer size */
-//const ProtoIoBufLen = 1024 * 16        /* Generic I/O buffer size */
+//const ProtoIoBufLen = 2                        /* Generic I/O buffer size */
+const ProtoIoBufLen = 1024 * 16        /* Generic I/O buffer size */
 const ProtoReplyChunkBytes = 16 * 1024 /* 16k output buffer */
 const ProtoInlineMaxSize = 1024 * 64   /* Max size of inline reads */
 const ProtoMBulkBigArg = 1024 * 32
@@ -55,3 +55,5 @@ const (
 )
 
 const LookupNone = 0
+const C_ERR = 0
+const C_OK = 1

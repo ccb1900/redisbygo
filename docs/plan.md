@@ -11,9 +11,10 @@
 ## 命令支持
 - ping
 - echo
-- config
+- select
 - get
 - set
+- config
 
 ```c
 struct redisCommand redisCommandTable[] = {

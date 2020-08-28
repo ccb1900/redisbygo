@@ -14,7 +14,7 @@ type Server struct {
 	Db                   []*RedisDb
 	No                   int
 	StatRejectedConn     int
-	CurrentClient        chan Client
+	CurrentClient        chan *Client
 	Listener             net.Listener
 	Aof                  *Aof
 	WaitCloseClients     chan int
@@ -32,7 +32,7 @@ func NewServer() *Server {
 			gs = new(Server)
 			gs.Log = log.NewLog()
 			gs.Clients = make(map[int]*Client, 0)
-			gs.CurrentClient = make(chan Client, 2048)
+			gs.CurrentClient = make(chan *Client, 2048)
 			gs.Aof = NewAof()
 			gs.RequirePass = false
 

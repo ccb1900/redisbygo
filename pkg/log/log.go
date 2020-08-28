@@ -19,6 +19,19 @@ func (l *Log) Info(message string) {
 	//log.Info(message)
 	//log.Warn(message)
 }
+
+func (l *Log) Error(message string) {
+	//log.Info(message)
+	//log.Warn(message)
+}
+func (l *Log) Warn(message string) {
+	//log.Info(message)
+	//log.Warn(message)
+}
+func (l *Log) Notice(message string) {
+	//log.Info(message)
+	//log.Warn(message)
+}
 func (l *Log) Log(message string, level int) {
 	//log.Info(message)
 	//log.Warn(message)
