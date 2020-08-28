@@ -75,3 +75,7 @@ func NewAof() *Aof {
 	a.Create()
 	return a
 }
+
+func CatAppendOnlyGenericCommand(buf string, argv []*RedisObject) string {
+	return ""
+}

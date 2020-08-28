@@ -12,3 +12,7 @@ func TestNewServer(t *testing.T) {
 
 	fmt.Println(pending)
 }
+
+func TestServerCron(t *testing.T) {
+	ServerCron()
+}

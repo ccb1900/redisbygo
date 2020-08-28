@@ -1,10 +1,17 @@
 package pkg
 
 import (
+	"fmt"
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
 	"sync"
+	"time"
+)
+
+const (
+	AofOff = 0
+	AofOn  = 1
 )
 
 type Server struct {
@@ -21,6 +28,9 @@ type Server struct {
 	NewClients           chan net.Conn
 	Commands             map[string]*RedisCommand
 	ClientMaxQueryBufLen int
+	AofState             int
+	AofFsync             int
+	AofSelectedDb        int
 }
 
 var gs *Server
@@ -35,6 +45,7 @@ func NewServer() *Server {
 			gs.CurrentClient = make(chan *Client, 2048)
 			gs.Aof = NewAof()
 			gs.RequirePass = false
+			gs.AofState = AofOff
 
 			c := config.NewConfig()
 			dbList := make([]*RedisDb, c.Dbnum)
@@ -51,4 +62,22 @@ func NewServer() *Server {
 	}
 
 	return gs
+}
+
+func ServerCron() {
+	ticker := time.NewTicker(1 * time.Second)
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		for {
+			select {
+			case t := <-ticker.C:
+				fmt.Println("2 s", t)
+			}
+		}
+	}()
+
+	wg.Wait()
 }

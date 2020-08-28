@@ -224,6 +224,5 @@ func handleConnection(s *pkg.Server, cl *pkg.Client) {
 				cl.Pending <- new(pkg.Pending)
 			}
 		}
-
 	}
 }
