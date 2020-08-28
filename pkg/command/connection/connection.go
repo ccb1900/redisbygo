@@ -1,4 +1,4 @@
-package db
+package connection
 
 import (
 	"github.com/ccb1900/redisbygo/pkg"

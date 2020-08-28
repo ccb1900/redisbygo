@@ -9,7 +9,6 @@ import (
 
 /**
 *** 写入aof文件
-***
 **/
 type Aof struct {
 	fd *os.File

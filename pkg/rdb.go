@@ -7,6 +7,10 @@ import (
 	"os"
 )
 
+// rio.h
+type Rdb struct {
+}
+
 func Test() {
 	f, e := os.Create("dump.rdb")
 

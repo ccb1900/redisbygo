@@ -13,7 +13,3 @@ type RedisCommand struct {
 	Microseconds int
 	Calls        int
 }
-
-func (rc *RedisCommand) Run(cl *Client) {
-
-}

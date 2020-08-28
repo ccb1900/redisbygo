@@ -12,6 +12,7 @@ import (
 type Client struct {
 	Conn            net.Conn
 	Index           int
+	Name            string
 	Log             *log.Log
 	Db              *RedisDb
 	QueryBuf        []byte
@@ -38,6 +39,13 @@ func NewClient(conn net.Conn) *Client {
 	c.Pending = make(chan *Pending, 1)
 	c.BulkLen = -1
 	return c
+}
+
+func CreateFakeClient() *Client {
+	cl := NewClient(nil)
+	cl.SelectDb(0)
+
+	return cl
 }
 func (cl *Client) Free() {
 	cl.MultiBulkLen = 0
