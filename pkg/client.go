@@ -43,6 +43,8 @@ func (cl *Client) Free() {
 	cl.MultiBulkLen = 0
 	cl.Argv = make([]*RedisObject, 0)
 	cl.BulkLen = -1
+	cl.Cmd = nil
+	cl.LastCmd = nil
 	cl.QueryBuf = make([]byte, 0)
 }
 func (cl *Client) reply(message string) {
@@ -98,7 +100,6 @@ func (cl *Client) LookupKeyReadOrReply(key *RedisObject, reply *RedisObject) *Re
 	o := cl.Db.LookupKeyRead(key)
 
 	if o == nil {
-		cl.AddReplyRedisObject(reply)
 		cl.AddReplyRedisObject(reply)
 	}
 	return o

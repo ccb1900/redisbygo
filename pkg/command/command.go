@@ -46,8 +46,8 @@ func AuthCommand(cl *pkg.Client) {
 	cl.AddReply("echo")
 }
 
-func CommandCommand(cl *pkg.Client) {
-	cl.AddReply("echo")
+func Command(cl *pkg.Client) {
+	cl.AddReply("success")
 }
 
 func InfoCommand(cl *pkg.Client) {

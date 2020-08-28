@@ -1,7 +1,6 @@
 package string
 
 import (
-	"fmt"
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/shared"
 )
@@ -13,13 +12,16 @@ func getGenericCommand(cl *pkg.Client) {
 	sh := shared.NewShared()
 	o := cl.LookupKeyReadOrReply(cl.Argv[1], sh.NullBulk)
 	if o == nil {
-		cl.AddReplyRedisObject(shared.NewShared().Ok)
+		return
 	} else {
-		cl.AddReplyBulk(o)
+		if o.TypeFlag != pkg.ObjString {
+			cl.AddReplyRedisObject(shared.NewShared().WrongTypeErr)
+		} else {
+			cl.AddReplyBulk(o)
+		}
 	}
 }
 func SetCommand(c *pkg.Client) {
-	fmt.Println(c.Argv)
 	setGenericCommand(c, 0, c.Argv[1], c.Argv[2], nil, 1, nil, nil)
 }
 

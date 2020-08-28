@@ -16,4 +16,5 @@ var RedisCommandTable = []pkg.RedisCommand{
 	{"config", command.ConfigCommand, -2, "last", 0, nil, 0, 0, 0, 0, 0},
 	{"ping", command.PingCommand, -1, "tF", 0, nil, 0, 0, 0, 0, 0},
 	{"echo", command.EchoCommand, 2, "F", 0, nil, 0, 0, 0, 0, 0},
+	{"command", command.Command, 0, "ltR", 0, nil, 0, 0, 0, 0, 0},
 }

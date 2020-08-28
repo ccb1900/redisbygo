@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"strings"
 )
 
 func InitServerConfig(s *pkg.Server) {
@@ -54,7 +55,7 @@ func handleCommands(s *pkg.Server) {
 
 func lookupCommand(cmd string) *pkg.RedisCommand {
 	s := pkg.NewServer()
-	return s.Commands[cmd]
+	return s.Commands[strings.ToLower(cmd)]
 }
 func getCommandMessage(ss []*pkg.RedisObject) []string {
 	s := make([]string, 0)
