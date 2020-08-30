@@ -3,13 +3,13 @@ package server
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/command/table"
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"io"
 	"net"
 	"strconv"
-	"strings"
 )
 
 func InitServerConfig(s *pkg.Server) {
@@ -25,12 +25,12 @@ func CreateServer() {
 	s := pkg.NewServer()
 	c := config.NewConfig()
 	InitServerConfig(s)
-
+	s.Aof.LoadAppendOnlyFile("appendonly.aof")
 	s.Log.Info("server start")
 	s.Log.Info("serve on :" + strconv.Itoa(c.Port))
 
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(c.Port))
-
+	fmt.Println("waiting redis client....on 6378")
 	s.Listener = ln
 	if err != nil {
 		s.Log.Info("listen::" + err.Error())
@@ -45,56 +45,12 @@ func handleCommands(s *pkg.Server) {
 	for {
 		select {
 		case cl := <-s.CurrentClient:
-			parseCommand(cl)
+			cl.ParseCommand()
 			//s.Aof.Write(command.Query)
 			cl.Free()
 			cl.Pending <- new(pkg.Pending)
 		}
 	}
-}
-
-func lookupCommand(cmd string) *pkg.RedisCommand {
-	s := pkg.NewServer()
-	return s.Commands[strings.ToLower(cmd)]
-}
-func getCommandMessage(ss []*pkg.RedisObject) []string {
-	s := make([]string, 0)
-	for i := 0; i < len(ss); i++ {
-		s = append(s, *ss[i].Ptr.(*string))
-	}
-
-	return s
-}
-
-// 解析命令
-func parseCommand(c *pkg.Client) bool {
-	c.LastCmd = lookupCommand(*c.Argv[0].Ptr.(*string))
-	c.Cmd = c.LastCmd
-	errCommand := []string{"ERR unknown command `%s`,",
-		"with args beginning with: `%s`,"}
-	errArgument := "wrong number of arguments for '%s' command"
-	if c.Cmd == nil {
-		c.AddReplyErrorFormat(getCommandMessage(c.Argv), errCommand...)
-		return true
-	} else if (c.Cmd.Arity > 0 && c.Cmd.Arity != len(c.Argv)) || (len(c.Argv) < -c.Cmd.Arity) {
-		c.AddReplyErrorFormat([]string{c.Cmd.Name}, errArgument)
-		return true
-	}
-	// 检查是否需要密码
-
-	// 检查集群
-
-	// 处理最大内存
-
-	// 不接受写命令的情况处理
-
-	// 发布订阅的上下文
-
-	// 执行命令
-
-	//fmt.Println(c.Argv)
-	c.Cmd.Proc(c)
-	return true
 }
 
 // 处理单行命令
@@ -120,6 +76,7 @@ func errorResponse(conn net.Conn, message string) {
 // 接受客户端请求
 func acceptRequest(s *pkg.Server) {
 	go func() {
+		//c := 0
 		for {
 			select {
 			case index := <-s.WaitCloseClients:
@@ -140,15 +97,14 @@ func acceptRequest(s *pkg.Server) {
 					s.Clients[s.No] = newClient
 					go handleConnection(s, newClient)
 				}
+				//default:
+				//	c++
+				//	fmt.Println("beforeasleep..." + strconv.Itoa(c))
 			}
 		}
 	}()
 	for {
-		go func() {
-			//s.Log.Info("waiting connecting...")
-		}()
 		conn, err := s.Listener.Accept()
-		//s.Log.Info("waiting connecting2...")
 		if err != nil {
 			s.Log.Info(err.Error())
 		} else {
@@ -161,28 +117,25 @@ func acceptRequest(s *pkg.Server) {
 
 // 处理客户端连接
 func handleConnection(s *pkg.Server, cl *pkg.Client) {
-	//s.Log.Info("new client")
 	s.Log.Info(cl.Conn.RemoteAddr().String())
 	cl.Pending <- new(pkg.Pending)
 	for {
 		<-cl.Pending
-		// 一次读取16kb
 		readLen := pkg.ProtoIoBufLen
 		buf := make([]byte, readLen)
 		size, err := cl.Conn.Read(buf)
 		if size == 0 && err == io.EOF {
 			err = cl.Conn.Close()
 			if err != nil {
-
+				s.Log.Error(err.Error())
 			} else {
-
+				s.Log.Info("close success")
 			}
 			// 删除客户端
 			s.WaitCloseClients <- cl.Index
 			break
 		} else {
 			cl.QueryBuf = append(cl.QueryBuf, buf[:size]...)
-			//fmt.Println("realbuf1::", string(cl.QueryBuf))
 			if cl.MultiBulkLen == 0 {
 				pos := bytes.Index(cl.QueryBuf, []byte{'\r', '\n'})
 				if pos > 0 && cl.QueryBuf[0] == '*' {
@@ -201,7 +154,6 @@ func handleConnection(s *pkg.Server, cl *pkg.Client) {
 			}
 
 			for cl.MultiBulkLen > 0 {
-				//fmt.Println("realbuf::", string(cl.QueryBuf))
 				pos := bytes.Index(cl.QueryBuf[0:], []byte{'\r', '\n'})
 
 				if pos == -1 {

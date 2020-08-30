@@ -26,6 +26,7 @@ type Client struct {
 	Cmd             *RedisCommand
 	LastCmd         *RedisCommand
 	Pending         chan *Pending
+	Flags           int
 }
 type Pending struct {
 }
@@ -34,17 +35,19 @@ func NewClient(conn net.Conn) *Client {
 	c := new(Client)
 	c.Log = log.NewLog()
 	c.SelectDb(0)
+	c.Argv = make([]*RedisObject, 0)
 	c.Conn = conn
 	c.QueryBuf = make([]byte, 0)
 	c.Pending = make(chan *Pending, 1)
 	c.BulkLen = -1
+	c.Flags = 1
 	return c
 }
 
 func CreateFakeClient() *Client {
 	cl := NewClient(nil)
 	cl.SelectDb(0)
-
+	cl.Flags = 0
 	return cl
 }
 func (cl *Client) Free() {
@@ -53,12 +56,19 @@ func (cl *Client) Free() {
 	cl.BulkLen = -1
 	cl.Cmd = nil
 	cl.LastCmd = nil
-	cl.QueryBuf = make([]byte, 0)
+	//cl.QueryBuf = make([]byte, 0)
+}
+
+func (cl *Client) FreeFakeClient() {
+	cl.Free()
+	cl.Flags = 0
 }
 func (cl *Client) reply(message string) {
-	bf := bufio.NewWriter(cl.Conn)
-	_, _ = bf.WriteString(message)
-	_ = bf.Flush()
+	if cl.Flags != 0 {
+		bf := bufio.NewWriter(cl.Conn)
+		_, _ = bf.WriteString(message)
+		_ = bf.Flush()
+	}
 }
 func (cl *Client) AddReplyRedisObject(object *RedisObject) {
 	cl.AddReply(*object.Ptr.(*string))
@@ -123,4 +133,38 @@ func (cl *Client) SelectDb(id int) int {
 		cl.Db = s.Db[id]
 		return C_OK
 	}
+}
+
+func (cl *Client) ParseCommand() bool {
+	var ok bool
+	cl.LastCmd, ok = LookupCommand(*cl.Argv[0].Ptr.(*string))
+	if !ok {
+		return true
+	}
+	cl.Cmd = cl.LastCmd
+	errCommand := []string{"ERR unknown command `%s`,",
+		"with args beginning with: `%s`,"}
+	errArgument := "wrong number of arguments for '%s' command"
+	if cl.Cmd == nil {
+		cl.AddReplyErrorFormat(GetCommandMessage(cl.Argv), errCommand...)
+		return true
+	} else if (cl.Cmd.Arity > 0 && cl.Cmd.Arity != len(cl.Argv)) || (len(cl.Argv) < -cl.Cmd.Arity) {
+		cl.AddReplyErrorFormat([]string{cl.Cmd.Name}, errArgument)
+		return true
+	}
+	// 检查是否需要密码
+
+	// 检查集群
+
+	// 处理最大内存
+
+	// 不接受写命令的情况处理
+
+	// 发布订阅的上下文
+
+	// 执行命令
+
+	//fmt.Println(c.Argv)
+	cl.Cmd.Proc(cl)
+	return true
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
+	"strings"
 	"sync"
 	"time"
 )
@@ -80,4 +81,22 @@ func ServerCron() {
 	}()
 
 	wg.Wait()
+}
+
+func (s *Server) LoadDataFromDisk() {
+	s.Aof.LoadAppendOnlyFile("")
+}
+
+func LookupCommand(cmd string) (*RedisCommand, bool) {
+	s := NewServer()
+	v, ok := s.Commands[strings.ToLower(cmd)]
+	return v, ok
+}
+func GetCommandMessage(ss []*RedisObject) []string {
+	s := make([]string, 0)
+	for i := 0; i < len(ss); i++ {
+		s = append(s, *ss[i].Ptr.(*string))
+	}
+
+	return s
 }

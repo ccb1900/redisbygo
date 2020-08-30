@@ -48,8 +48,8 @@ func serve() {
 	}()
 
 	go func() {
-		server.CreateServer()
 		defer wg.Done()
+		server.CreateServer()
 	}()
 
 	wg.Wait()
