@@ -4,6 +4,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg"
 	"github.com/ccb1900/redisbygo/pkg/command"
 	"github.com/ccb1900/redisbygo/pkg/command/connection"
+	"github.com/ccb1900/redisbygo/pkg/command/pubsub"
 	"github.com/ccb1900/redisbygo/pkg/command/server"
 	string2 "github.com/ccb1900/redisbygo/pkg/command/string"
 )
@@ -20,4 +21,10 @@ var RedisCommandTable = []pkg.RedisCommand{
 	{"ping", command.PingCommand, -1, "tF", 0, nil, 0, 0, 0, 0, 0},
 	{"echo", command.EchoCommand, 2, "F", 0, nil, 0, 0, 0, 0, 0},
 	{"command", command.Command, 0, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"publish", pubsub.PublishCommand, 3, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"pubsub", command.Command, -2, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"subscribe", pubsub.SubscribeCommand, -2, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"psubscribe", command.Command, -2, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"unsubscribe", command.Command, -1, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"punsubscribe", command.Command, -1, "ltR", 0, nil, 0, 0, 0, 0, 0},
 }

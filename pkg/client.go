@@ -27,6 +27,7 @@ type Client struct {
 	LastCmd         *RedisCommand
 	Pending         chan *Pending
 	Flags           int
+	PubSubChannel   map[string]bool
 }
 type Pending struct {
 }
@@ -41,6 +42,7 @@ func NewClient(conn net.Conn) *Client {
 	c.Pending = make(chan *Pending, 1)
 	c.BulkLen = -1
 	c.Flags = 1
+	c.PubSubChannel = make(map[string]bool)
 	return c
 }
 
@@ -60,7 +62,7 @@ func (cl *Client) Free() {
 }
 
 func (cl *Client) GetArgvByIndex(i int) string {
-	return *cl.Argv[1].Ptr.(*string)
+	return *cl.Argv[i].Ptr.(*string)
 }
 func (cl *Client) FreeFakeClient() {
 	cl.Free()

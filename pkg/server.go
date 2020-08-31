@@ -34,6 +34,7 @@ type Server struct {
 	AofSelectedDb        int
 	ReplicaList          []*ReplicationReplica
 	Main                 *ReplicationMain
+	PubSubChannels       map[string][]*Client
 }
 
 var gs *Server
@@ -59,6 +60,7 @@ func NewServer() *Server {
 			}
 
 			gs.Db = dbList
+			gs.PubSubChannels = make(map[string][]*Client, 0)
 			gs.WaitCloseClients = make(chan int, 16)
 			gs.NewClients = make(chan net.Conn, 32)
 			gs.ClientMaxQueryBufLen = ProtoMaxQueryBufLen

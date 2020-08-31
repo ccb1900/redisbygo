@@ -12,6 +12,7 @@
 - 集群
 - sentinel
 - lua脚本
+- 慢日志
 
 ## 命令支持
 - ping
