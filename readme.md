@@ -2,6 +2,17 @@
 
 This is a redis server implemented by golang
 
+## Supported
+
+- load aof file
+- command ping
+- command echo
+- command pubsub
+- command subscribe
+- command get
+- command set
+- command select
+
 ## Usage
 ```
 make
