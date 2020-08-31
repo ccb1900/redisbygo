@@ -59,6 +59,9 @@ func (cl *Client) Free() {
 	//cl.QueryBuf = make([]byte, 0)
 }
 
+func (cl *Client) GetArgvByIndex(i int) string {
+	return *cl.Argv[1].Ptr.(*string)
+}
 func (cl *Client) FreeFakeClient() {
 	cl.Free()
 	cl.Flags = 0

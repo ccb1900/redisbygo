@@ -32,6 +32,8 @@ type Server struct {
 	AofState             int
 	AofFsync             int
 	AofSelectedDb        int
+	ReplicaList          []*ReplicationReplica
+	Main                 *ReplicationMain
 }
 
 var gs *Server
@@ -48,6 +50,7 @@ func NewServer() *Server {
 			gs.RequirePass = false
 			gs.AofState = AofOff
 
+			gs.Main = NewReplicationMain()
 			c := config.NewConfig()
 			dbList := make([]*RedisDb, c.Dbnum)
 

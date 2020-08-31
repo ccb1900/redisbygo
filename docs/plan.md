@@ -8,6 +8,10 @@
 - 发布订阅
 - stream
 - 过期
+- 主从复制
+- 集群
+- sentinel
+- lua脚本
 
 ## 命令支持
 - ping

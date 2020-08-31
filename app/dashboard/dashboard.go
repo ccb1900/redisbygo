@@ -134,5 +134,5 @@ func CreateDashboard() {
 	r.GET("keys", keys)
 	// 获取服务器监控信息
 	r.GET("metrics", metrics)
-	_ = r.Run(":9002")
+	_ = r.Run(":9003")
 }
