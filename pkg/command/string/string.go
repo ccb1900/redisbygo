@@ -41,3 +41,11 @@ func setGenericCommand(cl *pkg.Client,
 	}
 
 }
+
+func IncrCommand(cl *pkg.Client) {
+	incrDecrCommand(cl, 1)
+}
+
+func incrDecrCommand(cl *pkg.Client, incr int) {
+	cl.AddReply("ok")
+}

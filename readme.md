@@ -22,8 +22,19 @@ make
 cp server.example.json server.json
 ```
 
+### win
 ```
-./build/redis
+./build/windows/redis.exe
+```
+
+### mac
+```
+./build/darwin/redis
+```
+
+### linux
+```
+./build/linux/redis
 ```
 
 ## Benchmark

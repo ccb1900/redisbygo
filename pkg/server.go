@@ -35,6 +35,7 @@ type Server struct {
 	ReplicaList          []*ReplicationReplica
 	Main                 *ReplicationMain
 	PubSubChannels       map[string][]*Client
+	Monitors             []*Client
 }
 
 var gs *Server
@@ -52,6 +53,7 @@ func NewServer() *Server {
 			gs.AofState = AofOff
 
 			gs.Main = NewReplicationMain()
+			gs.Monitors = make([]*Client, 0)
 			c := config.NewConfig()
 			dbList := make([]*RedisDb, c.Dbnum)
 

@@ -27,4 +27,5 @@ var RedisCommandTable = []pkg.RedisCommand{
 	{"psubscribe", command.Command, -2, "ltR", 0, nil, 0, 0, 0, 0, 0},
 	{"unsubscribe", command.Command, -1, "ltR", 0, nil, 0, 0, 0, 0, 0},
 	{"punsubscribe", command.Command, -1, "ltR", 0, nil, 0, 0, 0, 0, 0},
+	{"monitor", command.MonitorCommand, 1, "as", 0, nil, 0, 0, 0, 0, 0},
 }
