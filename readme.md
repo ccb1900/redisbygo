@@ -8,6 +8,10 @@ If you find some bugs,just give me an issue.
 
 There are many features what need to be implemented.When I have time,I will finish it.
 
+## Branch
+
+`dev` maybe not work,please use `master`
+
 ## Repository
 
 - [Gitee,where Chinese can visit](https://gitee.com/waterloocode/redisbygo)

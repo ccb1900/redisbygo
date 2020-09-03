@@ -10,6 +10,10 @@
 
 本项目是本着学习的目的，毕竟 go 在内存效率方面是无法和 c 比拟的，所以也不考虑能用在生产环境。
 
+## 分支说明
+
+dev 分支是开发分支，可能无法运行，请使用 master 测试学习。
+
 ## Repository
 
 - [Gitee,中国用户访问](https://gitee.com/waterloocode/redisbygo)
