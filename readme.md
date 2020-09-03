@@ -1,10 +1,12 @@
 # RedisServerByGo（ in development... ）
 
+[中文](/Readme_CN.md)
+
 This is a redis server implemented by golang
 
 If you find some bugs,just give me an issue.
 
-There is many features what need to be implemented.When I have time,I will finish it.
+There are many features what need to be implemented.When I have time,I will finish it.
 
 ## Repository
 
@@ -13,6 +15,7 @@ There is many features what need to be implemented.When I have time,I will finis
 
 ## Supported
 
+- load config
 - load aof file
 - command ping
 - command echo
