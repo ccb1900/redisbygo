@@ -1,6 +1,6 @@
 # RedisServerByGo（ 开发中... ）
 
-[English](/blob/master/readme.md)
+[English](/readme.md)
 
 这是一个golang实现的redis服务器
 
