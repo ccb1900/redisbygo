@@ -17,14 +17,14 @@
 
 ## 已支持
 
-- load aof file
-- command ping
-- command echo
-- command pubsub
-- command subscribe
-- command get
-- command set
-- command select
+- 加载aof文件
+- ping 命令
+- echo 命令
+- pubsub 命令
+- subscribe 命令
+- get 命令
+- set 命令
+- select 命令
 
 ## 用法
 
