@@ -9,7 +9,7 @@ RUN if [ ${CHINESE_ENABLE} ]; then \
     sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
 ;fi
 COPY . /app
-RUN go mod download && apk add make && make clean && make
+RUN go mod download && apk add make && make clean && make && cp server.example.json server.json
 
 FROM alpine:latest as prod
 
@@ -22,6 +22,6 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app/
 
 COPY --from=0 /app/build/linux/redis .
-COPY --from=0 /app/build/linux/server.example.json .
+COPY --from=0 /app/server.json .
 
 CMD ["/app/redis"]
