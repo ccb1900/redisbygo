@@ -6,6 +6,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -172,4 +173,8 @@ func (cl *Client) ParseCommand() bool {
 	//fmt.Println(c.Argv)
 	cl.Cmd.Proc(cl)
 	return true
+}
+
+func (cl *Client) AddReplyLongLong(s int) {
+	cl.reply(strconv.Itoa(s))
 }

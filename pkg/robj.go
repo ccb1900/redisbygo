@@ -1,6 +1,9 @@
 package pkg
 
-import "github.com/ccb1900/redisbygo/pkg/ds/quicklist"
+import (
+	"github.com/ccb1900/redisbygo/pkg/ds/intset"
+	"github.com/ccb1900/redisbygo/pkg/ds/quicklist"
+)
 
 type RedisObject struct {
 	Encoding int
@@ -27,6 +30,28 @@ func CreateQuickListObject() *RedisObject {
 	return obj
 }
 
+func SetTypeCreate(s string) *RedisObject {
+	return nil
+}
+
+func IsSdsRepresentableAsLongLong(s string) int {
+	return 0
+}
+
+func CreateIntSetObject() *RedisObject {
+	is := intset.NewIntSet()
+	o := NewRedisObject(ObjSet, is)
+	o.Encoding = ObjEncodingIntSet
+	return o
+}
+
+func CreateSetObject() *RedisObject {
+	return NewRedisObject(1, 1)
+}
+
+func CreateHashRedisObject() *RedisObject {
+	return NewRedisObject(1, 1)
+}
 func (o *RedisObject) DecrRefCount() {
 
 }
