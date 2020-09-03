@@ -15,6 +15,7 @@ There are many features what need to be implemented.When I have time,I will fini
 
 ## Supported
 
+- load config
 - load aof file
 - command ping
 - command echo
