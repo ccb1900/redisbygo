@@ -1,4 +1,4 @@
-package pkg
+package types
 
 type Int8T int8
 type Int64T int8
