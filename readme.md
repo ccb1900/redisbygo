@@ -1,5 +1,7 @@
 # RedisServerByGo（ in development... ）
 
+[中文](/blob/master/Readme_CN.md)
+
 This is a redis server implemented by golang
 
 If you find some bugs,just give me an issue.
