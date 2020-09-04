@@ -31,6 +31,7 @@ func (l *Log) Warn(message string) {
 func (l *Log) Notice(message string) {
 	//log.Info(message)
 	//log.Warn(message)
+	log.Info(message)
 }
 func (l *Log) Log(message string, level int) {
 	//log.Info(message)

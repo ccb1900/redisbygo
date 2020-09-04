@@ -1,37 +1,21 @@
 package pkg
 
 import (
-	"fmt"
-	"net"
-	"strconv"
+	"time"
 )
 
-func ReplicationCron() int {
-	s := NewServer()
-
-	c, err := net.Dial(s.Main.Host, strconv.Itoa(s.Main.Port))
-
-	if err != nil {
-		s.Log.Error(err.Error())
-		return C_ERR
-	}
+func runEveryTime(period int, f func(time2 time.Time)) {
+	ticker := time.NewTicker(time.Duration(period) * time.Millisecond)
 
 	for {
-		buf := make([]byte, 1024)
-
-		size, err := c.Read(buf)
-
-		if err != nil {
-			s.Log.Error(err.Error())
-			return C_ERR
+		select {
+		case t := <-ticker.C:
+			f(t)
 		}
-
-		realBuf := buf[0:size]
-
-		fmt.Println(realBuf)
 	}
 }
-
-func SyncWithMaster() {
-
+func Cron() {
+	go runEveryTime(1000, func(t time.Time) {
+		ReplicationCron()
+	})
 }

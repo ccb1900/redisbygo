@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// 作为从机
 func ReplicationOfCommand(cl *pkg.Client) {
 	s := pkg.NewServer()
 	// 判断是否是集群，集群中该命令无法使用
@@ -24,7 +25,7 @@ func ReplicationOfCommand(cl *pkg.Client) {
 	s.Main.Host = cl.GetArgvByIndex(1)
 	port, _ := strconv.Atoi(cl.GetArgvByIndex(2))
 	s.Main.Port = port
-
+	s.Main.State = pkg.REPL_STATE_CONNECT
 	sh := shared.NewShared()
 	cl.AddReplyRedisObject(sh.Ok)
 }
