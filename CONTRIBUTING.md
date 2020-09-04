@@ -1,1 +1,1 @@
-
+# Contributing to redisbygo
