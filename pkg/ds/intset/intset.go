@@ -15,15 +15,55 @@ func NewIntSet() *IntSet {
 	return o
 }
 
-func (is *IntSet) Add(value types.Int64T, success *types.Uint8T) *IntSet {
-	return NewIntSet()
+func (is *IntSet) Add(value types.Int64T) *IntSet {
+	index := is.Find(value)
+
+	// exists
+	if index < 0 {
+		return is
+	} else {
+		// max
+		if index >= len(is.Contents) {
+			is.Contents = append(is.Contents, types.Int8T(value))
+		} else {
+			// middle
+			rear := append([]types.Int8T{}, is.Contents[index:]...)
+
+			is.Contents = append(is.Contents[:index], types.Int8T(value))
+			is.Contents = append(is.Contents, rear...)
+		}
+	}
+
+	return is
 }
 
 func (is *IntSet) Remove(value types.Int64T, success *types.Uint8T) *IntSet {
 	return NewIntSet()
 }
-func (is *IntSet) Find(value types.Int64T) types.Uint8T {
-	return 0
+func (is *IntSet) Find(value types.Int64T) int {
+	if len(is.Contents) == 0 {
+		return 0
+	}
+	mid := len(is.Contents) / 2
+	low := 0
+	high := len(is.Contents)
+	for (mid <= len(is.Contents)-1) && mid >= 0 {
+		if value == types.Int64T(is.Contents[mid]) {
+			//exists,others are not exist
+			return -1
+		}
+		if value < types.Int64T(is.Contents[mid]) {
+			high = mid - 1
+		}
+		if value > types.Int64T(is.Contents[mid]) {
+			low = mid + 1
+		}
+		if low > high {
+			break
+		}
+		mid = (low + high) / 2
+	}
+	return low
 }
 
 func (is *IntSet) Random() types.Int64T {
