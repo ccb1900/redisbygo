@@ -1,6 +1,7 @@
 package intset
 
 import (
+	"fmt"
 	"github.com/ccb1900/redisbygo/pkg/types"
 )
 
@@ -16,10 +17,10 @@ func NewIntSet() *IntSet {
 }
 
 func (is *IntSet) Add(value types.Int64T) *IntSet {
-	index := is.Find(value)
+	exist, index := is.Find(value)
 
 	// exists
-	if index < 0 {
+	if exist > 0 {
 		return is
 	} else {
 		// max
@@ -37,12 +38,17 @@ func (is *IntSet) Add(value types.Int64T) *IntSet {
 	return is
 }
 
-func (is *IntSet) Remove(value types.Int64T, success *types.Uint8T) *IntSet {
-	return NewIntSet()
+func (is *IntSet) Remove(value types.Int64T) *IntSet {
+	exist, index := is.Find(value)
+	if exist > 0 {
+		fmt.Println(is.Contents[:index+1], is.Contents[index+2:])
+		is.Contents = append(is.Contents[:index], is.Contents[index+1:]...)
+	}
+	return is
 }
-func (is *IntSet) Find(value types.Int64T) int {
+func (is *IntSet) Find(value types.Int64T) (int, int) {
 	if len(is.Contents) == 0 {
-		return 0
+		return -1, 0
 	}
 	mid := len(is.Contents) / 2
 	low := 0
@@ -50,7 +56,7 @@ func (is *IntSet) Find(value types.Int64T) int {
 	for (mid <= len(is.Contents)-1) && mid >= 0 {
 		if value == types.Int64T(is.Contents[mid]) {
 			//exists,others are not exist
-			return -1
+			return 1, mid
 		}
 		if value < types.Int64T(is.Contents[mid]) {
 			high = mid - 1
@@ -63,7 +69,7 @@ func (is *IntSet) Find(value types.Int64T) int {
 		}
 		mid = (low + high) / 2
 	}
-	return low
+	return -1, low
 }
 
 func (is *IntSet) Random() types.Int64T {

@@ -16,4 +16,7 @@ func TestIntSet_Add(t *testing.T) {
 	}
 
 	fmt.Println(is.Contents)
+
+	is.Remove(4)
+	fmt.Println(is.Contents)
 }
