@@ -27,7 +27,7 @@ jobs:
           go-version: ${{ matrix.go }}
         id: go
       - name: codecov
-        uses: actions/setup-go@v2
+        uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           name: redisbygo # optional
