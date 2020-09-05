@@ -26,7 +26,12 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
         id: go
-
+      - name: codecov
+        uses: actions/setup-go@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          name: redisbygo # optional
+          fail_ci_if_error: true
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
       - name: Format
