@@ -134,10 +134,10 @@ func (cl *Client) SelectDb(id int) int {
 	s := NewServer()
 	if id < 0 || id >= c.Dbnum {
 		cl.Log.Info("db num err")
-		return C_ERR
+		return CErr
 	} else {
 		cl.Db = s.Db[id]
-		return C_OK
+		return COk
 	}
 }
 

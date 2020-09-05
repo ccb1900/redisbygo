@@ -12,7 +12,7 @@ func SelectDbCommand(c *pkg.Client) {
 		c.Log.Error(err.Error())
 		c.AddReplyError(err.Error())
 	} else {
-		if c.SelectDb(id) == pkg.C_OK {
+		if c.SelectDb(id) == pkg.COk {
 			c.AddReply("success")
 		} else {
 			c.AddReplyError("it is too big")

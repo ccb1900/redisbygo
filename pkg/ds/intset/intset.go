@@ -1,7 +1,7 @@
 package intset
 
 import (
-	"fmt"
+	"github.com/ccb1900/redisbygo/pkg/ds/list"
 	"github.com/ccb1900/redisbygo/pkg/types"
 )
 
@@ -28,10 +28,7 @@ func (is *IntSet) Add(value types.Int64T) *IntSet {
 			is.Contents = append(is.Contents, types.Int8T(value))
 		} else {
 			// middle
-			rear := append([]types.Int8T{}, is.Contents[index:]...)
-
-			is.Contents = append(is.Contents[:index], types.Int8T(value))
-			is.Contents = append(is.Contents, rear...)
+			list.InsertInt8T(&is.Contents, index, types.Int8T(value))
 		}
 	}
 
@@ -41,8 +38,7 @@ func (is *IntSet) Add(value types.Int64T) *IntSet {
 func (is *IntSet) Remove(value types.Int64T) *IntSet {
 	exist, index := is.Find(value)
 	if exist > 0 {
-		fmt.Println(is.Contents[:index+1], is.Contents[index+2:])
-		is.Contents = append(is.Contents[:index], is.Contents[index+1:]...)
+		list.DeleteInt8T(&is.Contents, index)
 	}
 	return is
 }

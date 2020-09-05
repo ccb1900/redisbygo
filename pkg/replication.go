@@ -48,7 +48,7 @@ func ConnectWithMaster() int {
 
 	if err != nil {
 		s.Log.Error(err.Error())
-		return C_ERR
+		return CErr
 	}
 	go func() {
 
@@ -70,7 +70,7 @@ func ConnectWithMaster() int {
 	}()
 	s.Main.State = REPL_STATE_CONNECTING
 
-	return C_OK
+	return COk
 }
 func ReplicationCron() {
 	// 连接主服务器,长连接
@@ -82,7 +82,7 @@ func ReplicationCron() {
 	if s.Main.State == REPL_STATE_CONNECT {
 		s.Log.Notice(fmt.Sprintf("Connecting to MASTER %s:%d",
 			s.Main.Host, s.Main.Port))
-		if ConnectWithMaster() == C_OK {
+		if ConnectWithMaster() == COk {
 			s.Log.Notice("MASTER <-> REPLICA sync started")
 		}
 	}

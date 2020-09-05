@@ -22,6 +22,15 @@ func NewRedisObject(typeFlag int, ptr interface{}) *RedisObject {
 	return ro
 }
 
+func NewStringRedisObject(s string) *RedisObject {
+	return NewRedisObject(ObjString, &s)
+}
+
+func (r *RedisObject) MakeShared() *RedisObject {
+	r.Refcount = OBJ_SHARED_REFCOUNT
+	return r
+}
+
 func CreateQuickListObject() *RedisObject {
 	ql := quicklist.CreateQuickList()
 	obj := NewRedisObject(ObjList, ql)
@@ -52,6 +61,6 @@ func CreateSetObject() *RedisObject {
 func CreateHashRedisObject() *RedisObject {
 	return NewRedisObject(1, 1)
 }
-func (o *RedisObject) DecrRefCount() {
+func (r *RedisObject) DecrRefCount() {
 
 }
