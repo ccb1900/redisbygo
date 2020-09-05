@@ -123,7 +123,7 @@ func NewShared() *Shared {
 
 		for i := 0; i < pkg.SharedSelectCmds; i++ {
 			shared.Selects[i] = pkg.NewStringRedisObject(fmt.Sprintf("*2"+crlf+"$6"+crlf+"SELECT"+crlf+"$%d"+crlf+"%s"+crlf,
-				1, "1"))
+				len(strconv.Itoa(i)), strconv.Itoa(i)))
 		}
 		for i := 0; i < pkg.ObjSharedBulkhdrLen; i++ {
 			shared.BulkHdr[i] = pkg.NewStringRedisObject(fmt.Sprintf("$%d"+crlf, i))
