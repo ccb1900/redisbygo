@@ -17,7 +17,7 @@ const (
 
 type Server struct {
 	RequirePass          bool
-	Log                  *log.Log
+	Log                  log.ILog
 	Clients              map[int]*Client
 	Db                   []*RedisDb
 	No                   int
@@ -45,7 +45,7 @@ func NewServer() *Server {
 	if gs == nil {
 		onceServer.Do(func() {
 			gs = new(Server)
-			gs.Log = log.NewLog()
+			gs.Log = log.NewLog(*gs)
 
 			c := config.NewConfig()
 			dbList := make([]*RedisDb, c.Dbnum)

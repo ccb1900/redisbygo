@@ -80,10 +80,10 @@ func ReplicationCron() {
 	// 全量同步
 	s := NewServer()
 	if s.Main.State == REPL_STATE_CONNECT {
-		s.Log.Notice(fmt.Sprintf("Connecting to MASTER %s:%d",
+		s.Log.Info(fmt.Sprintf("Connecting to MASTER %s:%d",
 			s.Main.Host, s.Main.Port))
 		if ConnectWithMaster() == COk {
-			s.Log.Notice("MASTER <-> REPLICA sync started")
+			s.Log.Info("MASTER <-> REPLICA sync started")
 		}
 	}
 

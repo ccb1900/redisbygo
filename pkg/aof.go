@@ -14,7 +14,7 @@ import (
 **/
 type Aof struct {
 	Fd  *os.File
-	Log *log.Log
+	Log log.ILog
 }
 
 // 创建aof文件
@@ -34,7 +34,7 @@ func (a *Aof) Create() {
 			panic("create file failed..")
 		}
 	}
-
+	a.Log = log.NewLog(*a)
 	a.Fd = f
 }
 func StartLoading(file *os.File) {

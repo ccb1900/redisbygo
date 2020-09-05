@@ -14,7 +14,7 @@ type Client struct {
 	Conn            net.Conn
 	Index           int
 	Name            string
-	Log             *log.Log
+	Log             log.ILog
 	Db              *RedisDb
 	QueryBuf        []byte
 	Query           string
@@ -35,7 +35,7 @@ type Pending struct {
 
 func NewClient(conn net.Conn) *Client {
 	c := new(Client)
-	c.Log = log.NewLog()
+	c.Log = log.NewLog(c)
 	c.SelectDb(0)
 	c.Argv = make([]*RedisObject, 0)
 	c.Conn = conn
