@@ -1,10 +1,12 @@
 package config
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewConfig(t *testing.T) {
-	c1 := GetInstance("../../server.json")
-	c2 := GetInstance("../../server.json")
+	c1 := NewConfig()
+	c2 := NewConfig()
 
 	if c1 == c2 {
 		t.Log("success")

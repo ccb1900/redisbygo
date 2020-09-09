@@ -61,4 +61,4 @@ const COk = 1
 const SharedSelectCmds = 10
 const ObjSharedIntegers = 10000
 const ObjSharedBulkhdrLen = 32
-const OBJ_SHARED_REFCOUNT = 2147483647
+const ObjSharedRefcount = 2147483647

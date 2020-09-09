@@ -27,7 +27,7 @@ func NewStringRedisObject(s string) *RedisObject {
 }
 
 func (r *RedisObject) MakeShared() *RedisObject {
-	r.Refcount = OBJ_SHARED_REFCOUNT
+	r.Refcount = ObjSharedRefcount
 	return r
 }
 
