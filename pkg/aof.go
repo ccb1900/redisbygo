@@ -14,7 +14,7 @@ import (
 **/
 type Aof struct {
 	Fd  *os.File
-	Log *log.Log
+	Log log.ILog
 }
 
 // 创建aof文件
@@ -34,7 +34,7 @@ func (a *Aof) Create() {
 			panic("create file failed..")
 		}
 	}
-
+	a.Log = log.NewLog(*a)
 	a.Fd = f
 }
 func StartLoading(file *os.File) {
@@ -53,7 +53,7 @@ func (a *Aof) LoadAppendOnlyFile(filename string) int {
 	if err != nil {
 		a.Log.Error(err.Error())
 
-		return C_ERR
+		return CErr
 	}
 
 	i, done := a.LoadFile(f, cl)
@@ -62,7 +62,7 @@ func (a *Aof) LoadAppendOnlyFile(filename string) int {
 	}
 
 	fmt.Println("test")
-	return C_OK
+	return COk
 }
 
 func (a *Aof) LoadFile(f *os.File, cl *Client) (int, bool) {
@@ -73,7 +73,7 @@ func (a *Aof) LoadFile(f *os.File, cl *Client) (int, bool) {
 
 		if err != nil {
 			a.Log.Error(err.Error())
-			return C_ERR, true
+			return CErr, true
 		}
 
 		if err == io.EOF {

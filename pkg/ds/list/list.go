@@ -1,33 +1,23 @@
 package list
 
-// 线程安全
+import "github.com/ccb1900/redisbygo/pkg/types"
 
-type Node struct {
-	data interface{}
-	next *Node
+func DeleteInt8T(s *[]types.Int8T, i int) {
+	*s = append((*s)[:i], (*s)[i+1:]...)
+}
+func InsertInt8T(s *[]types.Int8T, index int, e types.Int8T) {
+	rear := append([]types.Int8T{}, (*s)[index:]...)
+
+	*s = append((*s)[:index], e)
+	*s = append(*s, rear...)
 }
 
-type List struct {
-	head *Node
-	tail *Node
-	len  int
+func DeleteInt(s *[]int, i int) {
+	*s = append((*s)[:i], (*s)[i+1:]...)
 }
 
-func NewList() *List {
-	l := new(List)
-	l.head = new(Node)
-	return l
-}
-
-func (list *List) Push(e interface{}) {
-	node := new(Node)
-	node.data = e
-	node.next = list.head.next
-
-	list.head.next = node
-	list.len++
-}
-
-func (list *List) Length() int {
-	return list.len
+func InsertInt(s *[]int, index int, e int) {
+	rear := append([]int{}, (*s)[index:]...)
+	*s = append((*s)[:index], e)
+	*s = append(*s, rear...)
 }

@@ -5,3 +5,6 @@ server.json
 build
 .idea
 dump.rdb
+.env
+coverage.txt
+main/root.go

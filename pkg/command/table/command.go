@@ -6,6 +6,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg/command/connection"
 	"github.com/ccb1900/redisbygo/pkg/command/pubsub"
 	"github.com/ccb1900/redisbygo/pkg/command/server"
+	"github.com/ccb1900/redisbygo/pkg/command/set"
 	string2 "github.com/ccb1900/redisbygo/pkg/command/string"
 )
 
@@ -28,4 +29,5 @@ var RedisCommandTable = []pkg.RedisCommand{
 	{"unsubscribe", command.Command, -1, "ltR", 0, nil, 0, 0, 0, 0, 0},
 	{"punsubscribe", command.Command, -1, "ltR", 0, nil, 0, 0, 0, 0, 0},
 	{"monitor", command.MonitorCommand, 1, "as", 0, nil, 0, 0, 0, 0, 0},
+	{"sadd", set.SAddCommand, -3, "wmF", 0, nil, 1, 1, 1, 0, 0},
 }

@@ -17,7 +17,7 @@ const (
 
 type Server struct {
 	RequirePass          bool
-	Log                  *log.Log
+	Log                  log.ILog
 	Clients              map[int]*Client
 	Db                   []*RedisDb
 	No                   int
@@ -45,15 +45,8 @@ func NewServer() *Server {
 	if gs == nil {
 		onceServer.Do(func() {
 			gs = new(Server)
-			gs.Log = log.NewLog()
-			gs.Clients = make(map[int]*Client, 0)
-			gs.CurrentClient = make(chan *Client, 2048)
-			gs.Aof = NewAof()
-			gs.RequirePass = false
-			gs.AofState = AofOff
+			gs.Log = log.NewLog(*gs)
 
-			gs.Main = NewReplicationMain()
-			gs.Monitors = make([]*Client, 0)
 			c := config.NewConfig()
 			dbList := make([]*RedisDb, c.Dbnum)
 
@@ -62,6 +55,14 @@ func NewServer() *Server {
 			}
 
 			gs.Db = dbList
+			gs.Clients = make(map[int]*Client, 0)
+			gs.CurrentClient = make(chan *Client, 2048)
+			gs.Aof = NewAof()
+			gs.RequirePass = false
+			gs.AofState = AofOff
+
+			gs.Main = NewReplicationMain(nil)
+			gs.Monitors = make([]*Client, 0)
 			gs.PubSubChannels = make(map[string][]*Client, 0)
 			gs.WaitCloseClients = make(chan int, 16)
 			gs.NewClients = make(chan net.Conn, 32)

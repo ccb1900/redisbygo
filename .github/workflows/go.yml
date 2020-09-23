@@ -1,0 +1,42 @@
+name: Go
+
+on:
+  push:
+  # branches:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.13', '1.14','1.15']
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Set up Go ${{ matrix.go }}
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+        id: go
+      - name: codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          name: redisbygo # optional
+          fail_ci_if_error: true
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Format
+        run: gofmt -d -s .
+      - name: Get dependencies
+        run: go get -v -t -d ./...
+      - name: Build
+        run: go build -v ./...

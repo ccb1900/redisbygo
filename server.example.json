@@ -7,6 +7,7 @@
   "dbnum": 16,
   "maxclients": 100000,
   "name": "testredis",
+  "appendfsync": "always",
   "appendonly": true,
   "save_seconds": 60,
   "save_times": 10000,

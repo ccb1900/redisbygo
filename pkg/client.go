@@ -6,6 +6,7 @@ import (
 	"github.com/ccb1900/redisbygo/pkg/config"
 	"github.com/ccb1900/redisbygo/pkg/log"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ type Client struct {
 	Conn            net.Conn
 	Index           int
 	Name            string
-	Log             *log.Log
+	Log             log.ILog
 	Db              *RedisDb
 	QueryBuf        []byte
 	Query           string
@@ -34,7 +35,7 @@ type Pending struct {
 
 func NewClient(conn net.Conn) *Client {
 	c := new(Client)
-	c.Log = log.NewLog()
+	c.Log = log.NewLog(c)
 	c.SelectDb(0)
 	c.Argv = make([]*RedisObject, 0)
 	c.Conn = conn
@@ -133,10 +134,10 @@ func (cl *Client) SelectDb(id int) int {
 	s := NewServer()
 	if id < 0 || id >= c.Dbnum {
 		cl.Log.Info("db num err")
-		return C_ERR
+		return CErr
 	} else {
 		cl.Db = s.Db[id]
-		return C_OK
+		return COk
 	}
 }
 
@@ -172,4 +173,8 @@ func (cl *Client) ParseCommand() bool {
 	//fmt.Println(c.Argv)
 	cl.Cmd.Proc(cl)
 	return true
+}
+
+func (cl *Client) AddReplyLongLong(s int) {
+	cl.reply(strconv.Itoa(s))
 }

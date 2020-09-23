@@ -1,0 +1,10 @@
+version: "3"
+services:
+  redisdev:
+    build:
+      context: .
+      args:
+        - CHINESE_ENABLE=${CHINESE_ENABLE}
+        - GOPROXY=${GOPROXY}
+  redis:
+    image: redis:5

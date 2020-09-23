@@ -40,7 +40,7 @@ func usage() {
 }
 func serve() {
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 
 	go func() {
 		dashboard.CreateDashboard()
@@ -52,5 +52,9 @@ func serve() {
 		server.CreateServer()
 	}()
 
+	go func() {
+		defer wg.Done()
+		pkg.Cron()
+	}()
 	wg.Wait()
 }
